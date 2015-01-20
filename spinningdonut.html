@@ -21,21 +21,6 @@
 </head>
 <body>
 <div id = 'arrow'></div>
-<script>
-    var callbacks = [];
-
-    requestAnimationFrame = function(callback) {
-        callbacks.push(callback);
-    };
-
-    flushAnimationFrames = function() {
-        var now = Date.now;
-        Date.now = function() { return Infinity; };
-        callbacks.forEach(function(callback) { try { callback(); } catch (e) { console.error(e); } });
-        callbacks = [];
-        Date.now = now;
-    }
-</script>
 <script type="text/javascript">
 ;
 
@@ -118,7 +103,6 @@
                     startAngle: (a0 + a1) / 2,
                     endAngle: (a0 - a1) / 2
                 }));
-        flushAnimationFrames();
     }
 
     function tweenArc(b) {
