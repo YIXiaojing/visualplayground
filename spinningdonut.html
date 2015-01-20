@@ -1,0 +1,136 @@
+<html>
+<head>
+    <title>Donut Chart</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <style type="text/css">
+
+        body {
+            font: 10px sans-serif;
+        }
+        #arrow{
+            position: absolute;
+            left: 510px;
+            top: 258px;
+            background-color: green;
+            height: 10px;
+            width: 100px;
+        }
+
+    </style>
+</head>
+<body>
+<div id = 'arrow'></div>
+<script>
+    var callbacks = [];
+
+    requestAnimationFrame = function(callback) {
+        callbacks.push(callback);
+    };
+
+    flushAnimationFrames = function() {
+        var now = Date.now;
+        Date.now = function() { return Infinity; };
+        callbacks.forEach(function(callback) { try { callback(); } catch (e) { console.error(e); } });
+        callbacks = [];
+        Date.now = now;
+    }
+</script>
+<script type="text/javascript">
+;
+
+    var w = 500,
+            h = 600,
+            r1 = Math.min(w, h) / 2,
+            r0 = r1 * .6,
+            n = 10,
+            q = 0,
+            data0 = d3.range(n).map(Math.random),
+            data1 = data0,
+            data,
+            color = d3.scale.category20(),
+            arc = d3.svg.arc(),
+            donut = d3.layout.pie();
+
+    var vis = d3.select("body")
+            .append("svg:svg")
+            .attr("width", w)
+            .attr("height", h);
+
+    var curKey = function(myVal) {
+        var privateString = '';
+        function changeBy(val) {
+            privateString = val;
+        }
+        return {
+            chg: function(Val) {
+                changeBy(Val);
+            },
+            value: function() {
+                return privateString;
+            }
+        }
+    };
+
+    var angTrans=curKey();
+
+    vis.selectAll("g.arc")
+            .data(arcs(data0, data1))
+            .enter().append("svg:g")
+            .attr("class", "arc")
+            .attr("transform", "translate(" + r1 + "," + r1 + ")")
+            .append("svg:path")
+            .attr("fill", function(d, i) { return color(i); })
+            .attr("d", arc)
+            .on("click",swap)
+    ;
+
+
+    function arcs(data0, data1) {
+        var arcs0 = donut(data0),
+                arcs1 = donut(data0),
+                i = -1,
+                arc;
+        while (++i < n) {
+            arc = arcs0[i];
+            arc.innerRadius = r0;
+            arc.outerRadius = r1;
+            arc.next = arcs0[i];
+        }
+        return arcs0;
+    }
+
+    function swap(d,i) {
+        var angTr=(Math.PI/2) - (d.endAngle +d.startAngle)/2;
+        if ((d.endAngle +d.startAngle)/2>(Math.PI*3/2) ) angTr=2*Math.PI-
+                ((d.endAngle +d.startAngle)/2)+Math.PI/2;
+        angTrans.chg(angTr);
+        d3.selectAll("g.arc > path")
+                .each(transitionRotatealone);
+    }
+
+    function transitionRotatealone(d, i) {
+        var a0 = d.startAngle + d.endAngle + 2*angTrans.value(),
+                a1 = d.startAngle - d.endAngle;
+        d3.select(this)
+                .transition().ease('elastic').duration(800)
+                .attrTween("d", tweenArc({
+                    startAngle: (a0 + a1) / 2,
+                    endAngle: (a0 - a1) / 2
+                }));
+        flushAnimationFrames();
+    }
+
+    function tweenArc(b) {
+        return function(a) {
+            var i = d3.interpolate(a, b);
+            for (var key in b) a[key] = b[key]; // update data
+            return function(t) {
+                return arc(i(t));
+            };
+        };
+    }
+
+</script>
+</body>
+</html> 
