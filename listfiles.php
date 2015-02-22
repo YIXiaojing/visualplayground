@@ -7,7 +7,7 @@ $fileList = glob("*.html");
 $names = "[";
 
 foreach($fileList as $file) {
-    $names .= "{\"name\":"+"\"+$file+\""+"},";
+    $names .= "{\"name\":\"{$file}\"}";
 }
 
 $names.="]";
