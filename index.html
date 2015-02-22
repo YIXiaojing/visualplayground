@@ -13,9 +13,10 @@
     var getList = function(){
         $.get('listfiles.php',function(result){
             console.log(result);
-            for(var i=0;i<result.length;i++){
+            var list = JSON.parse(result);
+            for(var i=0;i<list.length;i++){
                 var item = $('<div/>');
-                item.text(result[i]);
+                item.text(list[i]);
                 $('#fileList').append(item);
             }
         })
