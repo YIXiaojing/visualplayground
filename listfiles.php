@@ -16,7 +16,9 @@ $fileList = rglob($_GET['pattern']);
 $names = "[";
 
 foreach ($fileList as $file) {
-    $names .= "{\"name\":\"{$file}\"},";
+    if ($file != "index.html") {
+        $names .= "{\"name\":\"{$file}\"},";
+    }
 }
 
 $names = rtrim($names, ",");
