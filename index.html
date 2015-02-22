@@ -7,7 +7,7 @@
 <div>Welcome to Visual Playground</div>
 <ul id="fileList"></ul>
 <script>
-    var getList = function() {
+    var getList = function () {
         $.get('listfiles.php?pattern=*.html', function (result) {
             var list = JSON.parse(result);
             for (var i = 0; i < list.length; i++) {
