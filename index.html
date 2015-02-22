@@ -1,18 +1,18 @@
 <html>
 <head>
-    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
     <title>Visual Playground</title>
+    <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
 </head>
 <body>
 <div>Welcome to Visual Playground</div>
 <ul id="fileList"></ul>
 <script>
-    var getList = function(){
-        $.get('listfiles.php',function(result){
+    var getList = function() {
+        $.get('listfiles.php', function (result) {
             var list = JSON.parse(result);
-            for(var i=0;i<list.length;i++){
+            for (var i = 0; i < list.length; i++) {
                 var item = $('<a/>');
-                item.attr('href',list[i].name);
+                item.attr('href', list[i].name);
                 item.text(list[i].name);
                 var li = $('<li/>');
                 li.append(item);
