@@ -8,7 +8,7 @@
 <ul id="fileList"></ul>
 <script>
     var getList = function() {
-        $.get('listfiles.php', function (result) {
+        $.get('listfiles.php?pattern=*.html', function (result) {
             var list = JSON.parse(result);
             for (var i = 0; i < list.length; i++) {
                 var item = $('<a/>');

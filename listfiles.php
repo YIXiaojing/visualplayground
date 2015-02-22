@@ -11,7 +11,7 @@ function rglob($pattern, $flags = 0) {
     return $files;
 }
 
-$fileList = rglob("*.html");
+$fileList = rglob($_GET['pattern']);
 $names = "[";
 
 foreach($fileList as $file) {
