@@ -4,6 +4,11 @@
  */
 
 $fileList = glob("*.html");
+$name = "Nothing found";
 
-echo $fileList;
+foreach($fileList as $file) {
+    $name = $file;
+}
+
+echo $name;
 
