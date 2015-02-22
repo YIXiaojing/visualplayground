@@ -18,7 +18,7 @@
             var baseLoc = window.location.href;
             for(var i=0;i<list.length;i++){
                 var item = $('<a/>');
-                itme.attr('href',baseLoc+item.name);
+                itme.attr('href',baseLoc+list[i].name);
                 item.text(list[i].name);
                 $('#fileList').append(item);
             }
