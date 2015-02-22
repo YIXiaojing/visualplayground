@@ -10,7 +10,7 @@ foreach($fileList as $file) {
     $names .= "{\"name\":\"{$file}\"},";
 }
 
-rtrim($names, ",");
+trim($names, ",");
 
 $names.="]";
 
