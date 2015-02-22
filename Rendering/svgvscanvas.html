@@ -115,12 +115,10 @@
                 return d.color;
             }
         })
-        render();
+        renderD3Canvase();
     }
 
-    function render() {
-
-        // clear canvas
+    function renderD3Canvase() {
         context.fillStyle = "#fff";
         context.rect(0, 0, d3Canvas.attr("width"), d3Canvas.attr("height"));
         context.fill();
