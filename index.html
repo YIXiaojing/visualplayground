@@ -6,10 +6,7 @@
 <body>
 <div>File List</div>
 <div>-----------</div>
-<ul id="fileList">
-
-</ul>
-</body>
+<ul id="fileList"></ul>
 <script>
     var getList = function(){
         $.get('listfiles.php',function(result){
@@ -26,4 +23,5 @@
     };
     getList();
 </script>
+</body>
 </html>
