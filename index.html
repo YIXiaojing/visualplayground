@@ -16,7 +16,7 @@
             var list = JSON.parse(result);
             for(var i=0;i<list.length;i++){
                 var item = $('<div/>');
-                item.text(list[i]);
+                item.text(list[i].name);
                 $('#fileList').append(item);
             }
         })

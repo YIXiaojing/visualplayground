@@ -1,6 +1,6 @@
 <?php
 /**
- * List files in current dir
+ * List HTML files in Current directory as JSON.
  */
 
 $fileList = glob("*.html");
@@ -11,7 +11,6 @@ foreach($fileList as $file) {
 }
 
 $names = rtrim($names, ",");
-
 $names.="]";
 
 echo $names;
