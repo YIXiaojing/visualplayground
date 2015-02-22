@@ -6,24 +6,25 @@
 <body>
 <div>File List</div>
 <div>-----------</div>
-<div id="fileList">
+<ul id="fileList">
 
-</div>
+</ul>
 </body>
 <script>
     var getList = function(){
         $.get('listfiles.php',function(result){
             console.log(result);
             var list = JSON.parse(result);
-            var baseLoc = window.location.href;
             for(var i=0;i<list.length;i++){
                 var item = $('<a/>');
-                item.attr('href',baseLoc+list[i].name);
+                item.attr('href'list[i].name);
                 item.text(list[i].name);
-                $('#fileList').append(item);
+                var li = $('<li/>');
+                li.append(item);
+                $('#fileList').append(li);
             }
         })
     }
-    getList();
+    //getList();
 </script>
 </html>
