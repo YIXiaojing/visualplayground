@@ -17,7 +17,7 @@
             var list = JSON.parse(result);
             for(var i=0;i<list.length;i++){
                 var item = $('<a/>');
-                item.attr('href'list[i].name);
+                item.attr('href',list[i].name);
                 item.text(list[i].name);
                 var li = $('<li/>');
                 li.append(item);
