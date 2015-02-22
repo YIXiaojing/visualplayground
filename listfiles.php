@@ -4,11 +4,13 @@
  */
 
 $fileList = glob("*.html");
-$name = "Nothing found";
+$names = "[";
 
 foreach($fileList as $file) {
-    $name = $file;
+    $names .= "{\"name\":"+"\"+$file+\""+"},";
 }
 
-echo $name;
+$names.="]";
+
+echo $names;
 
