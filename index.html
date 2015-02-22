@@ -1,7 +1,17 @@
 <html>
 <head>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <title>Visual Playground</title>
 </head>
 <body>
 Server is up and running ...
 </body>
+<script>
+    var getList = function(){
+        $.get('listfiles.php',function(result){
+            $('body').text(result);
+        })
+    }
+    getList();
+</script>
 </html>
