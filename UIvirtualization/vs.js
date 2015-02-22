@@ -22,12 +22,8 @@ d3.VirtualScroller = function () {
         function render(resize) {
             if (resize) {
                 viewportHeight = parseInt(viewport.style("height"));
-                var opt = 0;
-                if (opt) {
                     visibleRows = Math.ceil(viewportHeight / rowHeight) + 1;
-                } else {
-                    visibleRows = Math.max(minHeight, (totalRows * rowHeight));
-                }
+                //visibleRows = Math.max(minHeight, (totalRows * rowHeight));
             }
             var scrollTop = viewport.node().scrollTop;
             totalHeight = Math.max(minHeight, (totalRows * rowHeight));
