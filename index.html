@@ -9,6 +9,7 @@ Server is up and running ...
 <script>
     var getList = function(){
         $.get('listfiles.php',function(result){
+            console.log(result);
             $('body').text(result);
         })
     }
