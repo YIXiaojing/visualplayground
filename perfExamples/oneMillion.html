@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    function fast() {
+        /* 11-29-02 */
+        function timer(f) {
+            return function (x) {
+                var n1 = new Date();
+                f(x); // do something here
+                return new Date() - n1;
+            };
+        }
+
+        function m(n) {
+            var b = new Array(n), i = 0;
+            /* in actuality I would like to do b = [] */
+            do {
+                b[i] = ++i;
+            } while (i < n);
+            return b;
+        }
+
+        function w(n) {
+            var i = 0, b = t;
+            do {
+                b[i] += n;
+            } while (++i < n);
+        }
+
+        N = 1000000;
+        function MM() {
+            var i = 1, r = N / 1000;
+            t = m(r);
+            do {
+                document.write(t.join(' '), '\n');
+                w(r);
+                i += r;
+            } while (i <= N);
+        }
+
+        c = timer(MM);
+        document.write('<p>', c(), '</p>');
+    }
+    function normal(){
+        t0 = new Date();
+        var d = document;
+        for (i=1; i<100000; i++)
+            d.write(i + ' ');
+        d.write('<p>time = ', new Date() - t0);
+    }
+
+    fast();
+
+</script>
+</body>
+</html>

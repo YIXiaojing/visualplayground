@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    // stringFill1('.',4) will return '....'
+    function stringFill1(x, n) {
+        var s = '';
+        while (s.length < n) s += x;
+        return s;
+    }
+
+    function stringFill2(x, n) {
+        var s = '';
+        while (n-- > 0) s += x;
+        return s;
+    }
+
+    function stringFill3(x, n) {
+        var s = '';
+        for (;;) {
+            if (n & 1) s += x;
+            n >>= 1;
+            if (n) x += x;
+            else break;
+        }
+        return s;
+    }
+
+    function testFill(functionToBeTested, outputSize) {
+        var i = 0, t0 = new Date();
+        do {
+            functionToBeTested('x', outputSize);
+            t = new Date() - t0;
+            i++;
+        } while (t < 2000);
+        return t/i;
+    }
+
+    d = document;
+    d.write('Running Tests for 7 seconds ... <br/>');
+    var size = 1000000;
+    setTimeout(function() {
+        var seconds1 = testFill(stringFill1, size);
+        var seconds2 = testFill(stringFill2, size);
+        var seconds3 = testFill(stringFill3, size);
+
+        d.write('StringFill1 = ', Math.round(seconds1), 'ms<br/>');
+        d.write('StringFill2 = ', Math.round(seconds2), 'ms<br/>');
+        d.write('StringFill3 = ', Math.round(seconds3), 'ms<br/>');
+    },1000);
+</script>
+</body>
+</html>

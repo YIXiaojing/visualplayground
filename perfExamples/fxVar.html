@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    var size = 10000000;
+    function count() {
+        var i;
+        for (i=0; i<size; i++);
+    }
+
+    var t0 = new Date();
+    var i;
+    for (i=0; i<size; i++);
+
+    var t1 = new Date();
+    count();
+    var t2 = new Date();
+
+    d = document;
+    d.write('Without local variables = ', t1-t0, 'ms<br />');
+    d.write('With local variables = ', t2-t1, 'ms<br />');
+</script>
+</body>
+</html>
