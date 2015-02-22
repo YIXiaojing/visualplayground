@@ -5,6 +5,7 @@
 </head>
 <body>
 <div>File List</div>
+<div>-----------</div>
 <div id="fileList">
 
 </div>
@@ -14,8 +15,10 @@
         $.get('listfiles.php',function(result){
             console.log(result);
             var list = JSON.parse(result);
+            var baseLoc = window.location.href;
             for(var i=0;i<list.length;i++){
-                var item = $('<div/>');
+                var item = $('<a/>');
+                itme.attr('href',baseLoc+item.name);
                 item.text(list[i].name);
                 $('#fileList').append(item);
             }
