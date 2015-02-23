@@ -22,7 +22,7 @@ d3.VirtualScroller = function () {
         function render(resize) {
             if (resize) {
                 viewportHeight = parseInt(viewport.style("height"));
-                    visibleRows = Math.ceil(viewportHeight / rowHeight) + 1;
+                visibleRows = Math.ceil(viewportHeight / rowHeight) + 1;
                 //visibleRows = Math.max(minHeight, (totalRows * rowHeight));
             }
             var scrollTop = viewport.node().scrollTop;
@@ -46,34 +46,34 @@ d3.VirtualScroller = function () {
 
             var position0 = Math.max(0, Math.min(scrollPosition, totalRows - visibleRows + 1)),
                 position1 = position0 + visibleRows;
-            //           container.each(function () {
-                var rowSelection = container.selectAll(".row")
-                    .data(data.slice(position0, Math.min(position1, totalRows)), dataid);
+            var rowSelection = container.selectAll(".row")
+                .data(data.slice(position0, Math.min(position1, totalRows)), dataid);
 
-                rowSelection
-                    .enter()
-                    .append('g')
-                    .attr("class", "row")
-                    .call(enter);
-                rowSelection.order();
+            rowSelection
+                .enter()
+                .append('g')
+                .attr("class", "row")
+                .call(enter);
+            rowSelection.order();
 
-                var rowUpdateSelection = container.selectAll(".row:not(.transitioning)");
+            var rowUpdateSelection = container.selectAll(".row:not(.transitioning)");
 
-                rowUpdateSelection.call(update);
-            /*
+            rowUpdateSelection.call(update);
+
+            if (mode === 0) { // Divs will stack by default
                 rowUpdateSelection.each(function (d, i) {
                     d3.select(this).attr("transform", function (d) {
                         return "translate(0," + ((i * rowHeight)) + ")";
                     }).style("transform", function (d) {
                         return "translate(0," + ((i * rowHeight)) + ")";
                     });
-             });*/
+                });
+            }
 
-                rowSelection
-                    .exit()
-                    .call(exit)
-                    .remove();
-            //           });
+            rowSelection
+                .exit()
+                .call(exit)
+                .remove();
 
             if (onScroll) {
                 var direction = 0; // Same
