@@ -46,7 +46,7 @@ d3.VirtualScroller = function () {
 
             var position0 = Math.max(0, Math.min(scrollPosition, totalRows - visibleRows + 1)),
                 position1 = position0 + visibleRows;
-            container.each(function () {
+            //           container.each(function () {
                 var rowSelection = container.selectAll(".row")
                     .data(data.slice(position0, Math.min(position1, totalRows)), dataid);
 
@@ -60,20 +60,20 @@ d3.VirtualScroller = function () {
                 var rowUpdateSelection = container.selectAll(".row:not(.transitioning)");
 
                 rowUpdateSelection.call(update);
-
+            /*
                 rowUpdateSelection.each(function (d, i) {
                     d3.select(this).attr("transform", function (d) {
                         return "translate(0," + ((i * rowHeight)) + ")";
                     }).style("transform", function (d) {
                         return "translate(0," + ((i * rowHeight)) + ")";
                     });
-                });
+             });*/
 
                 rowSelection
                     .exit()
                     .call(exit)
                     .remove();
-            });
+            //           });
 
             if (onScroll) {
                 var direction = 0; // Same
