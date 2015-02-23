@@ -38,7 +38,11 @@ d3.VirtualScroller = function () {
         function scrollRenderFrame(scrollPosition) {
             container
                 .attr("transform", "translate(0," + (scrollPosition * rowHeight) + ")")
-                .style("transform", "translate(0," + (scrollPosition * rowHeight) + "px)");
+                .style(
+                {
+                    "transform": "translate(0," + (scrollPosition * rowHeight) + "px)",
+                    "-webkit-transform": "translate(0," + (scrollPosition * rowHeight) + "px)"
+                });
 
             var position0 = Math.max(0, Math.min(scrollPosition, totalRows - visibleRows + 1)),
                 position1 = position0 + visibleRows;
