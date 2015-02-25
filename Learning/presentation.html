@@ -198,11 +198,11 @@ selection
                 .duration(5000)
                 .attr({
                     cx: function (d, i) {
-                        return (i + 1) * 100;
+                        return (i + 1) * 100 * (1/32) + 'em';
                     },
-                    cy: 80,
+                    cy: 80/32 + 'em',
                     r: function (d) {
-                        return d;
+                        return d * 1/32 + 'em';
                     },
                     fill: 'purple'
                 });
