@@ -105,15 +105,14 @@
     <h1 class="blue">Strange selections</h1>
     <pre>
         <code class="javascript">
-            <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
+<span class="keyword">var</span> data = [10, 40, 30, 20, 60];
 
-            <span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>);
-            <span class="keyword">var</span> selection = svg.selectAll(<span
-                class="string">'.happycircles'</span>).<span class="highlighted">data(data)</span>;
+<span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>);
+<span class="keyword">var</span> selection = svg.selectAll(<span class="string">'.happycircles'</span>).<span class="highlighted">data(data)</span>;
 
-            selection.enter()
-            .append(<span class="string">'circle'</span>)
-            .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
+selection.enter()
+    .append(<span class="string">'circle'</span>)
+    .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
         </code>
     </pre>
 </section>
@@ -121,15 +120,13 @@
 <section>
     <pre>
     <code class="javascript">
-        selection
-        .attr({
-        <span class="variable">cx</span>: <span class="function">function</span>(d, i){ <span
-            class="keyword">return</span> (i + 1) * 100; },
+selection
+    .attr({
+        <span class="variable">cx</span>: <span class="function">function</span>(d, i){ <span class="keyword">return</span> (i + 1) * 100; },
         <span class="variable">cy</span>: 80,
-        <span class="variable">r</span>: <span class="function">function</span>(d) { <span class="keyword">return</span>
-        d; },
+        <span class="variable">r</span>: <span class="function">function</span>(d) { <span class="keyword">return</span>d; },
         <span class="variable">fill</span>: 'purple'
-        });
+    });
     </code>
         </pre>
 </section>
