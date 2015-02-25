@@ -145,23 +145,43 @@ selection
 <script src="//d3js.org/d3.v3.min.js" type="text/javascript"></script>
 <script src="stack.js"></script>
 <script>
-
-    var mystack = stack()
+    stack()
             .on("activate", activate)
             .on("deactivate", deactivate);
 
+    var aniCircles = 7;
 
     function activate(d, i) {
         console.log('a: ' + i);
-        if (i === 7) {
+        if (i === aniCircles) {
             createCircles();
         }
     }
 
     function deactivate(d, i) {
         console.log('b: ' + i);
+        if(i===aniCircles){
+            removeCircles();
+        }
     }
 
+    var callbacks = [];
+    window.requestAnimationFrame = function(callback) {
+        callbacks.push(callback);
+    };
+
+    var flushAnimationFrames = function() {
+        var now = Date.now;
+        Date.now = function() { return Infinity; };
+        callbacks.forEach(function(callback) { try { callback(); } catch (e) { console.error(e); } });
+        callbacks = [];
+        Date.now = now;
+    };
+
+    function removeCircles(){
+        flushAnimationFrames();
+        d3.select('#svgCircles').selectAll('*').remove();
+    }
     function createCircles() {
         var data = [10, 40, 30, 20, 60];
         var svg = d3.select('#svgCircles');
