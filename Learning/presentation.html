@@ -52,7 +52,7 @@
     }
 
     h1 {
-        font-size: 100px;
+        font-size: 2.5em;
         font-weight: 700;
     }
 
@@ -131,7 +131,7 @@ selection
         </pre>
 </section>
 
-<section>
+<section id="aniCircles">
     <h1>Circles in Action</h1>
     <svg id="svgCircles"></svg>
 </section>
@@ -149,18 +149,20 @@ selection
             .on("activate", activate)
             .on("deactivate", deactivate);
 
-    var aniCircles = 7;
+    var section = d3.selectAll("section"),
+            aniCir = d3.select("#aniCircles"),
+            aniCirIndex = section[0].indexOf(aniCir.node());
 
     function activate(d, i) {
         console.log('a: ' + i);
-        if (i === aniCircles) {
+        if (i === aniCirIndex) {
             createCircles();
         }
     }
 
     function deactivate(d, i) {
         console.log('b: ' + i);
-        if(i===aniCircles){
+        if(i===aniCirIndex){
             removeCircles();
         }
     }
