@@ -153,10 +153,11 @@ selection
             aniCir = d3.select("#aniCircles"),
             aniCirIndex = section[0].indexOf(aniCir.node());
 
+    aniCir.on('click', createCircles);
     function activate(d, i) {
         console.log('a: ' + i);
         if (i === aniCirIndex) {
-            //createCircles();
+            createCircles();
         }
     }
 
@@ -166,8 +167,6 @@ selection
             removeCircles();
         }
     }
-
-    createCircles();
 
     var callbacks = [];
     window.requestAnimationFrame = function(callback) {
