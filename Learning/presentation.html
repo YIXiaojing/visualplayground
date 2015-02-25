@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<meta charset="utf-8" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width">
+<style>
+    @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700);
+
+    section {
+        background: #000;
+        color: #fff;
+        padding: 2em;
+        font-family: 'Yanone Kaffeesatz', sans-serif;
+    }
+
+    .grey {
+        color: #777;
+    }
+
+    .blue {
+        color: #A0D7EA;
+    }
+
+    .highlighted {
+        color: mediumpurple;
+        font-weight: 700;
+        border-bottom: 3px solid mediumpurple;
+    }
+
+    .purple {
+        color: mediumpurple;
+    }
+
+    .variable {
+        color: yellowgreen;
+    }
+
+    .function, .keyword {
+        color: cornflowerblue;
+    }
+
+    .string {
+        color: #ff8621;
+    }
+
+    a:link,
+    a:visited {
+        color: orange;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    h1 {
+        font-size: 100px;
+        font-weight: 700;
+    }
+
+    h2 {
+        font-weight: 400;
+    }
+
+    #svgCircles {
+        height: 300px;
+        width: 800px;
+    }
+
+    img {
+        padding-top: 1em;
+        padding-left: 7em;
+        height: 700px;
+    }
+
+</style>
+
+<section style="text-align:center;padding-top:5em;">
+    <h1 class="blue">d3.basic (fundamentals)</h1>
+
+    <h2 class="grey">by Sachin Patney</h2>
+</section>
+
+<section style="text-align:center;padding-top:5em;">
+    <h1 class="blue">What is this D3?</h1>
+
+    <h2 class="grey">oh! tell me, tell me please</h2>
+</section>
+
+<section>
+    <img src="d3.min.screen.png"/>
+</section>
+
+<section style="text-align:center;padding-top:5em;">
+    <h1 class="blue">D3 === C++</h1>
+
+    <h2 class="grey">[HTML] [CSS] [JAVASCRIPT] [SVG] [DOM]</h2>
+</section>
+
+<section style="text-align:center;padding-top:5em;">
+    <h1 class="blue">Hello Array !!</h1>
+    <code>
+        <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
+    </code>
+</section>
+<section>
+    <h1 class="blue">Strange selections</h1>
+    <pre>
+        <code class="javascript">
+            <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
+
+            <span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>);
+            <span class="keyword">var</span> selection = svg.selectAll(<span
+                class="string">'.happycircles'</span>).<span class="highlighted">data(data)</span>;
+
+            selection.enter()
+            .append(<span class="string">'circle'</span>)
+            .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
+        </code>
+    </pre>
+</section>
+
+<section>
+    <pre>
+    <code class="javascript">
+        selection
+        .attr({
+        <span class="variable">cx</span>: <span class="function">function</span>(d, i){ <span
+            class="keyword">return</span> (i + 1) * 100; },
+        <span class="variable">cy</span>: 80,
+        <span class="variable">r</span>: <span class="function">function</span>(d) { <span class="keyword">return</span>
+        d; },
+        <span class="variable">fill</span>: 'purple'
+        });
+    </code>
+        </pre>
+</section>
+
+<section>
+    <h1>Circles in Action</h1>
+    <svg id="svgCircles"></svg>
+</section>
+
+<section style="text-align:center;padding-top:5em;">
+    <h1 class="blue">The End</h1>
+
+    <h2 class="grey">Questions ?</h2>
+</section>
+
+<script src="//d3js.org/d3.v3.min.js" type="text/javascript"></script>
+<script src="stack.js"></script>
+<script>
+
+    var mystack = stack()
+            .on("activate", activate)
+            .on("deactivate", deactivate);
+
+
+    function activate(d, i) {
+        console.log('a: ' + i);
+        if (i === 7) {
+            createCircles();
+        }
+    }
+
+    function deactivate(d, i) {
+        console.log('b: ' + i);
+    }
+
+    function createCircles() {
+        var data = [10, 40, 30, 20, 60];
+        var svg = d3.select('#svgCircles');
+
+        var selection = svg.selectAll('.happycircles').data(data);
+        selection.enter().append('circle')
+                .attr({cx: 0, fill: 'yellow'})
+                .classed('happycircles', true);
+        selection
+                .transition()
+                .duration(5000)
+                .attr({
+                    cx: function (d, i) {
+                        return (i + 1) * 100;
+                    },
+                    cy: 80,
+                    r: function (d) {
+                        return d;
+                    },
+                    fill: 'purple'
+                });
+    }
+
+</script>
