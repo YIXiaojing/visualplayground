@@ -20,6 +20,7 @@ var flushAnimationFrames = function () {
     Date.now = now;
 };
 
+$('section').css('visibility','visible')
 stack()
     .on("activate", activate)
     .on("deactivate", deactivate);
