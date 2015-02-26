@@ -263,6 +263,11 @@ selection
         createAnimatedCircles();
     });
 
+    theEnd.on('click', function(){
+        killForceLayout();
+        createForceLayout();
+    });
+
     function activate(d, i) {
         console.log('a: ' + i);
         if (i === aniCirIndex) {
