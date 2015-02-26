@@ -430,9 +430,7 @@ function createForceLayout() {
 
     var node =
         svg.
-            selectAll
-
-        ("circle");
+            selectAll("circle");
 
     function tick(e) {
         var k = .1 * e.alpha;
