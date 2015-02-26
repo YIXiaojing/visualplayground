@@ -20,10 +20,12 @@ var flushAnimationFrames = function () {
     Date.now = now;
 };
 
-$('section').css('visibility','visible')
+
 stack()
     .on("activate", activate)
     .on("deactivate", deactivate);
+
+$('section').css('visibility','visible');
 
 var section = d3.selectAll("section"),
     cir = d3.select("#circles"),
