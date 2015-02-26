@@ -400,7 +400,7 @@ function createForceLayout() {
         height = fly.height();
     var fill = d3.scale.
 
-        category10().range(["#C7F464", "#00A0B0", "#F56991"]);
+        category10().range(["#C7F464", "#EB6841", "#F56991"]);
     ;
 
     var nodes = []
