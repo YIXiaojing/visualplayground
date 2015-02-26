@@ -157,6 +157,24 @@ selection
     <svg class="svgDemo" id="svgCircles"></svg>
 </section>
 
+<section id="enter">
+    <h1 class="blue">Enter</h1>
+    <div></div>
+    <h3 class="grey">New data, for which there were no existing elements.</h3>
+</section>
+
+<section id="update">
+    <h1 class="blue">Update</h1>
+    <div></div>
+    <h3 class="grey">New data that was joined successfully to an existing element.</h3>
+</section>
+
+<section id="exit">
+    <h1 class="blue">Exit</h1>
+    <div></div>
+    <h3 class="grey">Existing elements, for which there were no new data.</h3>
+</section>
+
 <section>
     <h1 class="blue">Setting things in Motion</h1>
 <pre>
@@ -256,7 +274,9 @@ selection
     createCircles();
     createDots();
     createBar();
-
+    enter();
+    update();
+    exit();
 
     aniCir.on('click', function(){
         removeAnimatedCircles();
@@ -531,6 +551,91 @@ selection
         clearInterval(forceLayoutIntervalId);
         var fly = $('#svgForce');
         fly.empty();
+    }
+
+    function exit(){
+        d3.select("#exit div").call(joinChart().mode("exit"))
+    }
+
+    function enter(){
+        d3.select("#enter div").call(joinChart().mode("enter"))
+    }
+
+    function update(){
+        d3.select("#update div").call(joinChart().mode("update"))
+    }
+
+    function joinChart() {
+        var mode;
+
+        function chart(selection) {
+            var modes = {};
+
+            // mode can be space-separated, e.g., "enter update"
+            mode.split(" ").forEach(function(m) { modes[m] = 1; });
+
+            selection.each(function() {
+                var exitDiv = $('#exit');
+                var svg = d3.select(this).append("svg")
+                        .attr("width", '35em')
+                        .attr("height", '10em')
+                        .attr("class", "join chart")
+                        .append("g")
+                        .attr("transform", "translate("+exitDiv.width()/2+","+exitDiv.height()/3.5+")");
+
+                var r1 = exitDiv.height()/5;
+                var r2 = exitDiv.height()/6;
+
+                svg.append("path")
+                        .attr("d", "M0,-{R2}A{R1},{R1} 0 0 0 0,{R2}A{R1},{R1} 0 1 1 0,-{R2}"
+                                .replace(/{R1}/g,r1)
+                                .replace(/{R2}/g,r2))
+                        .style("fill", "#9e9ac8")
+                        .style("fill-opacity", "enter" in modes ? null : 0);
+
+                svg.append("path")
+                        .attr("d", "M0,-{R2}A{R1},{R1} 0 0 0 0,{R2}A{R1},{R1} 0 0 0 0,-{R2}"
+                                .replace(/{R1}/g,r1)
+                                .replace(/{R2}/g,r2))
+                        .style("fill", "#e377c2")
+                        .style("fill-opacity", "update" in modes ? null : 0);
+
+                svg.append("path")
+                        .attr("d", "M0,-{R2}A{R1},{R1} 0 1 1 0,{R2}A{R1},{R1} 0 0 0 0,-{R2}"
+                                .replace(/{R1}/g,r1)
+                                .replace(/{R2}/g,r2))
+                        .style("fill", "#74c476")
+                        .style("fill-opacity", "exit" in modes ? null : 0);
+
+                svg.append("text")
+                        .attr("x", -r1/2 * 1.25)
+                        .attr("y", -r1 * 1.1)
+                        .style("fill", "#fff")
+                        .text("Data");
+
+                svg.append("text")
+                        .attr("x", r1/2 * 1.25)
+                        .attr("y", -r1 * 1.1)
+                        .style("fill", "#fff")
+                        .text("Elements");
+
+                svg.selectAll("path")
+                        .style("stroke", "#fff")
+                        .style("stroke-width", "0.1em");
+
+                svg.selectAll("text")
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "1em");
+            });
+        }
+
+        chart.mode = function(_) {
+            if (!arguments.length) return mode;
+            mode = _ + "";
+            return chart;
+        };
+
+        return chart;
     }
 
 </script>
