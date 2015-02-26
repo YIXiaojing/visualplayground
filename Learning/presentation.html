@@ -147,7 +147,7 @@ selection.enter()
 </section>
 
 <section>
-    <h1 class="blue">Update()</h1>
+    <h1 class="blue">update() + exit()</h1>
     <pre>
     <code class="javascript">
 selection
@@ -157,6 +157,8 @@ selection
         <span class="variable">r</span>: <span class="function">function</span>(d) { <span class="keyword">return</span> d; },
         <span class="variable">fill</span>: 'purple'
     });
+
+selection.exit().remove();
     </code>
         </pre>
 </section>
@@ -192,7 +194,7 @@ selection.enter()
     .append(<span class="string">'circle'</span>)
     .attr({
         <span class="highlighted"><span class="variable">cx</span>: 0,</span>
-        <span class="highlighted"><span class="variable">fill</span>: 'yellow'</span>
+        <span class="highlighted"><span class="variable">fill</span>: '#FFFFFF'</span>
     })
     .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
 </code>

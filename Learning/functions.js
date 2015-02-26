@@ -140,7 +140,7 @@ function createAnimatedCircles() {
         'circle')
         .attr({
             cx: 0,
-            fill: 'yellow'
+            fill: '#ffffff'
         })
         .classed('happycircles', true);
     selection
