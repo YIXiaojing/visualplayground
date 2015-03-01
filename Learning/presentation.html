@@ -22,6 +22,11 @@
 </section>
 
 <section style="text-align:center;padding-top:5em;">
+    <h1 class="altTitle">Start Small!</h1>
+    <h2 class="grey">You don't need to master everything at once</h2>
+</section>
+
+<section style="text-align:center;padding-top:5em;">
     <h1 class="blue">The Chicken or the Array ?</h1>
     <code>
         <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
@@ -121,16 +126,37 @@ selection
 </section>
 
 <section id="snake">
-    <h1 class="blue">Chain animations to create a snake in loop</h1>
+    <h1 class="blue">Animation Chain</h1>
     <svg class="svgDemo" id="svgSnake"></svg>
 </section>
 
 <section>
     <h1 class="blue">Scales</h1>
+    <pre>
+        <code>
+<span class="keyword">var</span> data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 100];
+
+<span class="keyword">var</span> xScale = <span class="d3">d3</span>.scale.linear()
+    .domain([<span class="variable">0</span>, <span class="d3">d3</span>.max(<span class="variable">data</span>)])
+    .range([<span class="variable">0</span>, <span class="variable">width</span>]);
+        </code>
+    </pre>
 </section>
 
 <section>
     <h1 class="blue">Axis</h1>
+    <pre>
+        <code>
+<span class="keyword">var</span> xAxis = <span class="d3">d3</span>.svg.axis().scale(<span class="variable">xScale</span>)
+    .orient("bottom")
+    .tickPadding(<span class="variable">8</span>);
+
+svg.append("g")
+    .attr("transform", "translate(0,"+ <span class="variable">height</span> +")")
+    .call(<span class="variable">xAxis</span>);
+        </code>
+<svg class="svgAxisDiv" id="svgAxis"></svg>
+    </pre>
 </section>
 
 <section id="scatterPlot">
@@ -138,14 +164,17 @@ selection
     <svg class="svgDemo" id="svgScatterPlot"></svg>
 </section>
 
-<section id="barChart">
-    <h1 class="blue">Bar Chart</h1>
-    <svg class="svgDemo" id="svgBarChart"></svg>
+<section id="interpolator">
+    <h1 class="blue">Interpolator</h1>
+</section>
+
+<section id="makePie">
+    <h1 class="blue">Lets make some PIE!</h1>
 </section>
 
 <section id="canvas">
     <h1 class="blue">D3 + Canvas Magic</h1>
-    <div id="canvasDiv"></div>
+    <div class="takeOver" id="canvasDiv"></div>
 </section>
 
 <section id="theend" style="text-align:center;padding-top:4em;">

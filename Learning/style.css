@@ -15,18 +15,18 @@ rect.bar, circle.dot {
     fill: purple
 }
 
-#canvasDiv{
-    height: 13em;
-    width: 35em;
-    overflow: hidden;
-}
-
 section {
     background: #000;
     color: #fff;
     padding: 2em;
     font-family: 'Yanone Kaffeesatz', sans-serif;
     visibility: hidden;
+}
+
+.takeOver{
+    position: absolute;
+    top:0;
+    left: 0;
 }
 
 .grey {
@@ -37,12 +37,16 @@ section {
     color: #69D2E7
 }
 
+.altTitle{
+    color:#e377c2;
+}
+
 .highlighted {
     font-weight: 700;
     border-bottom: 0.1em solid mediumpurple;
 }
 
-.purple {
+.purple, .d3{
     color: mediumpurple;
 }
 
@@ -79,6 +83,11 @@ h2 {
 
 .svgDemo {
     height: 13em;
+    width: 35em;
+}
+
+.svgAxisDiv{
+    height: 2em;
     width: 35em;
 }
 

@@ -40,8 +40,8 @@ theCanvas = d3.select("#canvas"),
 
 createCircles();
 createSnake();
+createAxis();
 createDots();
-createBar();
 enter();
 update();
 exit();
@@ -92,17 +92,14 @@ function deactivate(d, i) {
 
 function createCircles() {
     var data = [10, 40, 30, 20, 60];
-    var svg = d3.select('#svgCircles')
-        ;
+    var svg = d3.select('#svgCircles');
 
-    var selection = svg.
+    var selection = svg.selectAll('.happycircles').data(data);
+    selection
+        .enter()
+        .append('circle')
+        .classed('happycircles', true);
 
-        selectAll('.happycircles').data(data);
-    selection.enter
-    ().append('circle')
-        .
-        classed('happycircles', true
-    );
     selection
         .attr({
             cx: function (d, i) {
@@ -110,13 +107,9 @@ function createCircles() {
                     +
                     'em';
             },
-            cy: 150 / 32 +
-            'em',
+            cy: 150 / 32 + 'em',
             r: function (d) {
-                return d * 1 /
-                    32
-
-                    + 'em';
+                return d * 1 / 32 + 'em';
             }
             ,
             fill: 'purple'
@@ -125,15 +118,13 @@ function createCircles() {
 
 function removeCircles() {
     flushAnimationFrames();
-    d3.select('#svgCircles').selectAll(
-        '*').remove();
+    d3.select('#svgCircles').selectAll('*').remove();
 }
 
 function createAnimatedCircles() {
     var data = [10, 40, 30, 20,
         60];
-    var svg = d3.select(
-        '#svgAniCircles');
+    var svg = d3.select('#svgAniCircles');
 
     var selection = svg.selectAll('.happycircles').data(
         data);
@@ -162,122 +153,47 @@ function createAnimatedCircles() {
         });
 }
 
-function
-
-removeAnimatedCircles() {
+function removeAnimatedCircles() {
     flushAnimationFrames();
     d3.select(
         '#svgAniCircles').selectAll('*').remove();
 }
 
-function
-removeBar() {
-    $('#svgBarChart').
-        empty();
+function removeDots() {
+    $('#svgScatterPlot').empty();
 }
 
-function
+function createAxis(){
+    var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 100];
+    var svgAxis = $('#svgAxis');
 
-removeDots() {
-    $(
-        '#svgScatterPlot').empty();
-}
+    var margin = {top: 40, right: 40, bottom: 40, left: 40},
+        width = svgAxis.width(),
+        height = svgAxis.height();
 
-function createBar() {
-    var data = [1, 1, 2, 3, 5,
+    var svg = d3.select(svgAxis.get(0))
+        .append("svg")
+        .attr({
+            "width": width,
+            "height": height,
+            "class": "dot chart"
+        })
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + 0+ ")");
 
-        8];
-
-    var margin = {
-            top: 40
-            , right: 40, bottom: 40, left: 40
-        },
-        width = $('#svgBarChart').width(),
-
-        height = $('#svgBarChart').height();
-
-    var
-        x = d3.
-            scale.linear()
-            .domain([0, d3.
-
-                max(data)])
-            .
-            range([0,
-                width - margin.
-                    left - margin.
-                    right]);
-
-    var y = d3.scale.ordinal()
-        .domain(d3.
-            range(data.length))
-        .rangeRoundBands([height -
-        margin.top - margin.bottom, 0]
-        , .2);
+    var xScale = d3.scale.linear().domain([0, d3.max(data)]).
+        range([0, width - margin.left - margin.right]);
 
     var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient(
-            "bottom")
-            .
-            tickPadding(8)
-        ;
-
-    var yAxis =
-        d3.svg.axis()
-            .scale(y)
-            .orient
-        ("left")
-            .tickSize(0)
-            .tickPadding(8);
-
-    var svg = d3.
-
-        select("#svgBarChart")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class",
-
-        "bar chart")
-        .append("g")
-        .attr(
-        "transform",
-        "translate(" + margin.left + "," + margin.
-            top + ")");
-
-    svg.selectAll(
-        ".bar")
-        .data(data)
-        .enter().append(
-        "rect")
-        .attr("class", "bar")
-        .attr("y", function (d,
-                             i) {
-            return y(i);
-        })
-        .attr("width",
-        x)
-        .
-        attr("height", y.
-            rangeBand());
+        .scale(xScale)
+        .orient("bottom")
+        .tickPadding(8);
 
     svg.append("g")
         .attr("class", "x axis")
-        .attr(
-        "transform", "translate(0," + y.rangeExtent()[1] + ")")
+        .attr("transform", "translate(0," + 0+ ")")
         .call(xAxis);
 
-    svg.append("g")
-        .
-        attr("class", "y axis")
-        .call(yAxis)
-        .selectAll("text")
-        .
-        text(function (d) {
-            return String.
-                fromCharCode(d + 65);
-        });
 }
 
 function createDots() {
@@ -296,38 +212,30 @@ function createDots() {
         {x: 5.0, y: 4.74},
     ];
 
-    var scatter = $(
-        '#svgScatterPlot');
-    var
-        margin = {
-            top: 40, right: 40
-            , bottom: 40, left: 40
-        },
-        width = scatter
-            .width(),
+    var scatter = $('#svgScatterPlot');
+    var margin = {top: 40, right: 40, bottom: 40, left: 40},
+        width = scatter.width(),
         height = scatter.height();
 
-    var x = pad(d3.scale.linear()
-        .domain(d3.extent(data, function (d) {
+    var xScale = pad(d3.scale.linear().domain(d3.extent(data,
+        function (d) {
             return d.x;
         }))
         .range([0, width - margin.left - margin.right]), 40);
-    var y = pad(d3.scale.
-        linear()
-        .domain(d3.extent(data, function (d) {
+
+    var yScale = pad(d3.scale.linear().domain(d3.extent(data,
+        function (d) {
             return d.y;
         }))
-        .range([height -
+        .range([height - margin.top - margin.bottom, 0]), 40);
 
-        margin.top - margin.
-            bottom, 0]), 40);
     var xAxis = d3.svg.axis()
-        .scale(x)
+        .scale(xScale)
         .orient("bottom")
         .tickPadding(8);
 
     var yAxis = d3.svg.axis()
-        .scale(y)
+        .scale(yScale)
         .orient("left")
         .tickPadding(8);
 
@@ -335,53 +243,34 @@ function createDots() {
         svg = d3.select(scatter.get(0)).
             append("svg")
             .attr("width", width)
-            .attr(
-            "height", height)
-            .attr("class",
-            "dot chart")
+            .attr("height", height)
+            .attr("class", "dot chart")
             .append("g")
-            .attr(
-            "transform",
-
-            "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     svg.
-        selectAll(".dot"
-    )
+        selectAll(".dot")
         .data(data)
-        .enter().append("circle")
-        .
-        attr("class",
-        "dot")
-        .attr
-
-    ("cx", function (d) {
-        return x(d.x);
-    })
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", function (d) {
+            return xScale(d.x);
+        })
         .attr("cy", function (d) {
-            return y(
-                d.y);
+            return yScale(d.y);
         })
         .attr("r", '0.4em');
 
     svg.
         append("g")
-        .attr("class",
-        "x axis")
-        .attr("transform",
-        "translate(0," + y.
-
-            range()[0] + ")")
-        .
-
-        call(xAxis);
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + yScale.range()[0] + ")")
+        .call(xAxis);
 
     svg.append("g")
-        .
-
-        attr("class", "y axis")
-        .
-        call(yAxis);
+        .attr("class", "y axis")
+        .call(yAxis);
 
     function pad(scale, k) {
         var range
@@ -399,50 +288,39 @@ function createForceLayout() {
     var fly = $('#svgForce');
     var width = fly.width(),
         height = fly.height();
-    var fill = d3.scale.
+    var fill = d3.scale
+        .category10()
+        .range(["#C7F464", "#EB6841", "#F56991"]);
 
-        category10().range(["#C7F464", "#EB6841", "#F56991"]);
-    ;
-
-    var nodes = []
-        ,
+    var nodes = [],
         foci = [{
             x: width / 4, y: height /
             2
         }, {x: width / 4 * 2, y: height / 2}, {
             x: width / 4 * 3, y: height / 2
         }];
+
     var svg = d3.select(fly.get(0)).append("svg")
-        .
-        attr("width", width)
+        .attr("width", width)
         .attr("height", height);
 
     var
         force = d3.layout.force()
             .nodes(nodes)
             .links([])
-            .
-
-            gravity(0)
-            .size([width,
-                height])
+            .gravity(0)
+            .size([width, height])
             .on("tick", tick
         );
 
-    var node =
-        svg.
-            selectAll("circle");
+    var node = svg.selectAll("circle");
 
     function tick(e) {
         var k = .1 * e.alpha;
         // Push nodes toward their designated focus.
         nodes.forEach(function (o, i) {
-            o.y += ( foci[o.id].
-                y - o.y) * k;
-            o.x += (foci[o.id].x -
-            o.x
-
-            ) * k;
+            o.y += ( foci[o.id].y - o.y) * k;
+            o.x += (foci[o.id].x - o.x) * k;
         });
 
         node
@@ -495,8 +373,7 @@ function killForceLayout() {
     fly.empty();
 }
 
-function
-exit() {
+function exit() {
     d3.select("#exit div").call(joinChart().mode("exit"))
 }
 
@@ -528,8 +405,7 @@ function joinChart() {
                 var exitDiv = $('#exit');
                 var svg = d3.select(this).append("svg")
                     .attr("width", '35em')
-                    .attr(
-                    "height", '10em')
+                    .attr("height", '10em')
                     .attr("class", "join chart")
                     .append("g")
                     .attr("transform", "translate(" +
@@ -541,14 +417,10 @@ function joinChart() {
                 var r2 = exitDiv.height() / 6;
 
                 svg.append("path")
-                    .attr("d",
-                    "M0,-{R2}A{R1},{R1} 0 0 0 0,{R2}A{R1},{R1} 0 1 1 0,-{R2}"
-                        .
-                        replace(/{R1}/g, r1)
-                        .replace(/{R2}/g
-                        , r2))
-                    .style(
-                    "fill", "#9e9ac8")
+                    .attr("d", "M0,-{R2}A{R1},{R1} 0 0 0 0,{R2}A{R1},{R1} 0 1 1 0,-{R2}"
+                        .replace(/{R1}/g, r1)
+                        .replace(/{R2}/g, r2))
+                    .style("fill", "#9e9ac8")
                     .style("fill-opacity", "enter" in modes ? null : 0);
 
                 svg.append("path")
@@ -609,7 +481,7 @@ function createSnake(){
 
     var z = d3.scale.linear()
         .domain([10, 0])
-        .range(["purple", "hotpink"])
+        .range(["purple", "orange"])
         .interpolate(d3.interpolateHcl);
 
     var svg = d3.select(snake.get(0)).append("svg")
@@ -646,6 +518,11 @@ function createSnake(){
 d3.ns.prefix.custom = "http://sachin";
 
 var canvasDiv = $('#canvasDiv');
+var canvasId = $('#canvas');
+
+canvasDiv.height(canvasId.css('height'));
+canvasDiv.width(canvasId.css('width'));
+
 var w = canvasDiv.width(),
     h = canvasDiv.height(),
     surface;
@@ -730,14 +607,14 @@ d3.select(canvasDiv.get(0)).on("mousemove", function () {
         .attr("cx", pos[0])
         .attr("cy", pos[1])
         .attr("r", 0)
-        .attr("stroke", '#8ED6FF')
+        .attr("stroke", 'rgba(255,20,147,1)')
         .attr("stroke-width", 5)
-        .attr('fill', 'hotpink')
+        .attr('fill', 'rgba(255,105,180,1)')
         .transition()
         .duration(2000)
         .ease(Math.sqrt)
         .attr("r", 200)
-        .attr("stroke", "#000")
-        .attr('fill', '#000')
+        .attr("stroke", "rgba(255,20,147,0)")
+        .attr('fill', 'rgba(255,105,180,0)')
         .remove();
 });
