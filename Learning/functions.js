@@ -1,5 +1,6 @@
 var callbacks = [];
 var forceLayoutIntervalId = 0;
+
 window.requestAnimationFrame = function (callback) {
     callbacks.push(callback);
 };
@@ -20,6 +21,22 @@ var flushAnimationFrames = function () {
     Date.now = now;
 };
 
+d3.interpolators.push(function(a, b) {
+    var ma, mb;
+    if (b === "INTERPOLATOR") {
+        return function(t) {
+            var s = "";
+            for(var i=0; i< a.length;i++){
+                ma = a.charCodeAt(i);
+                mb = b.charCodeAt(i) - ma;
+
+                s+= String.fromCharCode(ma + Math.round(mb * t));
+            }
+
+            return s;
+        };
+    }
+});
 
 stack()
     .on("activate", activate)
@@ -35,7 +52,9 @@ aniCir = d3.select("#aniCircles"),
     theEnd = d3.select("#theend"),
     theEndIndex = section[0].indexOf(theEnd.node())
 theCanvas = d3.select("#canvas"),
-    theCanvasIndex = section[0].indexOf(theCanvas.node());
+    theCanvasIndex = section[0].indexOf(theCanvas.node()),
+interpolator = d3.select("#interpolator"),
+    interpolatorIndex = section[0].indexOf(interpolator.node());
 
 
 createCircles();
@@ -74,6 +93,8 @@ function activate(d, i) {
         createForceLayout();
     } else if (i === theCanvasIndex) {
         setupCanvas();
+    }else if(i === interpolatorIndex){
+        startInterpolator();
     }
 }
 
@@ -88,6 +109,25 @@ function deactivate(d, i) {
     } else if (i === theCanvasIndex) {
         destroyCanvas();
     }
+}
+
+function startInterpolator(){
+    d3.select('#interpolator h1')
+        .data(['INTERPOLATOR'])
+        .style('color','white')
+        .style('margin-left','0em')
+        .text('AAAAAAAAAAAA')
+        .transition()
+        .duration(5000)
+        .style('color','#74c476')
+        .style('margin-left','5em')
+        .tween("text", function(d) {
+            var i = d3.interpolate(this.textContent, d);
+
+            return function(t) {
+                this.textContent = i(t);
+            };
+        });
 }
 
 function createCircles() {
@@ -604,17 +644,12 @@ function canvasRenderTarget(selection) {
 d3.select(canvasDiv.get(0)).on("mousemove", function () {
     var pos = d3.mouse(this);
     surface.append('custom:cloud')
-        .attr("cx", pos[0])
-        .attr("cy", pos[1])
-        .attr("r", 0)
-        .attr("stroke", 'rgba(255,20,147,1)')
-        .attr("stroke-width", 5)
-        .attr('fill', 'rgba(255,105,180,1)')
+        .attr({"cx": pos[0], "cy": pos[1], "r": 0})
+        .attr({"stroke": 'rgba(255,20,147,1)', "stroke-width": 5, 'fill': 'rgba(255,105,180,1)'})
         .transition()
         .duration(2000)
         .ease(Math.sqrt)
-        .attr("r", 200)
-        .attr("stroke", "rgba(255,20,147,0)")
+        .attr({"r": 200, "stroke": "rgba(255,20,147,0)"})
         .attr('fill', 'rgba(255,105,180,0)')
         .remove();
 });

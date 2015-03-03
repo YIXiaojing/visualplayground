@@ -88,6 +88,19 @@ selection.exit().remove();
     <h3 class="grey">Existing elements, for which there was no new data.</h3>
 </section>
 
+<section id="keyfunction">
+    <h1 class="blue">Key Function</h1>
+    <pre>
+        <code>
+<span class="function">function</span> key(d) { <span class="keyword">return</span> d.someUniqueIdentifier; }
+
+<span class="keyword">var</span> selection = svg
+            .selectAll(<span class="string">'.happycircles'</span>)
+            .<span class="highlighted">data(data, key)</span>;
+</code>
+    </pre>
+</section>
+
 <section>
     <h1 class="blue">Setting things in Motion</h1>
 <pre>
@@ -165,16 +178,45 @@ svg.append("g")
 </section>
 
 <section id="interpolator">
-    <h1 class="blue">Interpolator</h1>
+    <h1>Interpolator</h1>
+    <pre>
+        <code>
+<span class="d3">d3</span>.interpolators.push(<span class="function">function</span>(a, b) {
+    <span class="keyword">var</span> re = <span class="string">/^\$([0-9,.]+)$/</span>, ma, mb, f = d3.format(<span class="string">",.02f"</span>);
+    <span class="keyword">if</span> ((ma = re.exec(a)) && (mb = re.exec(b))) {
+        a = parseFloat(ma[1]); b = parseFloat(mb[1]) - a;
+        <span class="keyword">return</span> <span class="function">function</span>(t) { return <span class="string">"$"</span>  + f(a + b * t); };
+    }
+});
+
+<span class="d3">d3.select</span>(<span class="string">'#result'</span>)
+            .text(d3.interpolate(<span class="string">'$10'</span>, <span class="string">'$30'</span>)(1/2)); <span class="grey">//$20.00</span>
+        </code>
+    </pre>
 </section>
 
-<section id="makePie">
+<!--<section id="makePie">
     <h1 class="blue">Lets make some PIE!</h1>
-</section>
+</section> -->
 
 <section id="canvas">
     <h1 class="blue">D3 + Canvas Magic</h1>
     <div class="takeOver" id="canvasDiv"></div>
+    <pre>
+        <code>
+<span class="d3">d3</span>.select(canvasDiv.get(0)).on(<span class="string">'mousemove'</span>, <span class="function">function</span>() {
+    <span class="keyword">var</span> pos = <span class="d3">d3</span>.mouse(<span class="keyword">this</span>);
+    surface.append(<span class="string">'custom:cloud'</span>)
+        .attr({<span class="string">'cx'</span>: pos[0], <span class="string">'cy'</span>: pos[1], <span class="string">'r'</span>: 0 })
+        .attr({<span class="string">"stroke"</span>: <span class="string">'rgba(255,20,147,1)'</span>,
+            <span class="string">'stroke-width'</span>: 5,
+            <span class="string">'fill'</span>: <span class="string">'rgba(255,105,180,1)'</span> })
+        .transition().duration(2000).ease(Math.sqrt)
+        .attr({<span class="string">'r'</span>: 200, <span class="string">'stroke'</span>: <span class="string">'rgba(255,20,147,0)'</span> })
+        .attr(<span class="string">'fill'</span>, <span class="string">'rgba(255,105,180,0)'</span>).remove();
+});
+        </code>
+    </pre>
 </section>
 
 <section id="theend" style="text-align:center;padding-top:4em;">

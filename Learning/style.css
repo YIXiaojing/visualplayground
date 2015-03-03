@@ -77,6 +77,14 @@ h1 {
     font-weight: 700;
 }
 
+#interpolator h1, #canvas h1{
+    margin-bottom: 0.1em;
+}
+
+pre{
+    margin-top: 0em;
+}
+
 h2 {
     font-weight: 400;
 }
