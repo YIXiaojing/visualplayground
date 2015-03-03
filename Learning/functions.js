@@ -58,7 +58,6 @@ interpolator = d3.select("#interpolator"),
 
 
 createCircles();
-createSnake();
 createAxis();
 createDots();
 enter();
