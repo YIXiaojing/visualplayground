@@ -182,10 +182,10 @@ svg.append("g")
     <pre>
         <code>
 <span class="d3">d3</span>.interpolators.push(<span class="function">function</span>(a, b) {
-    <span class="keyword">var</span> re = <span class="string">/^\$([0-9,.]+)$/</span>, ma, mb, f = d3.format(<span class="string">",.02f"</span>);
+    <span class="keyword">var</span> re = <span class="string">/^\$([0-9,.]+)$/</span>, ma, mb, f = d3.format(<span class="string">',.02f'</span>);
     <span class="keyword">if</span> ((ma = re.exec(a)) && (mb = re.exec(b))) {
         a = parseFloat(ma[1]); b = parseFloat(mb[1]) - a;
-        <span class="keyword">return</span> <span class="function">function</span>(t) { return <span class="string">"$"</span>  + f(a + b * t); };
+        <span class="keyword">return</span> <span class="function">function</span>(t) { return <span class="string">'$'</span>  + f(a + b * t); };
     }
 });
 
@@ -208,7 +208,7 @@ svg.append("g")
     <span class="keyword">var</span> pos = <span class="d3">d3</span>.mouse(<span class="keyword">this</span>);
     surface.append(<span class="string">'custom:cloud'</span>)
         .attr({<span class="string">'cx'</span>: pos[0], <span class="string">'cy'</span>: pos[1], <span class="string">'r'</span>: 0 })
-        .attr({<span class="string">"stroke"</span>: <span class="string">'rgba(255,20,147,1)'</span>,
+        .attr({<span class="string">'stroke'</span>: <span class="string">'rgba(255,20,147,1)'</span>,
             <span class="string">'stroke-width'</span>: 5,
             <span class="string">'fill'</span>: <span class="string">'rgba(255,105,180,1)'</span> })
         .transition().duration(2000).ease(Math.sqrt)
