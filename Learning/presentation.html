@@ -165,11 +165,11 @@ selection
     <pre>
         <code>
 <span class="keyword">var</span> xAxis = <span class="d3">d3</span>.svg.axis().scale(<span class="variable">xScale</span>)
-    .orient("bottom")
+    .orient(<span class="string">"bottom"</span>)
     .tickPadding(<span class="variable">8</span>);
 
-svg.append("g")
-    .attr("transform", "translate(0,"+ <span class="variable">height</span> +")")
+svg.append(<span class="string">"g"</span>)
+    .attr(<span class="string">"transform"</span>, <span class="string">"translate(0,"</span>+ <span class="variable">height</span> +<span class="string">")"</span>)
     .call(<span class="variable">xAxis</span>);
         </code>
 <svg class="svgAxisDiv" id="svgAxis"></svg>
