@@ -285,6 +285,7 @@ function createDots() {
         {x: 5.0, y: 4.74},
     ];
 
+    var t = 1500;
     var scatter = $('#svgScatterPlot');
     var margin = {top: 40, right: 40, bottom: 40, left: 40},
         width = scatter.width(),
@@ -333,13 +334,15 @@ function createDots() {
         selection.enter()
             .append("circle")
             .attr('opacity',1)
+            .attr('fill','orange')
             .attr("class", "dot")
             .attr('cy', yScale.range()[0])
             .attr("r", '0.4em');
 
         selection
             .transition()
-            .duration(1000)
+            .duration(t)
+            .attr('fill', 'purple')
             .attr("cx", function (d) {
                 return xScale(d.x);
             })
@@ -349,19 +352,20 @@ function createDots() {
 
         selection.exit()
             .transition()
-            .duration(1000)
+            .duration(t)
             .attr('opacity',0)
+            .attr('r','3em')
             .remove();
 
         xAxisG
             .attr("transform", "translate(0," + yScale.range()[0] + ")")
             .transition()
-            .duration(1000)
+            .duration(t)
             .call(xAxis);
 
         yAxisG
             .transition()
-            .duration(1000)
+            .duration(t)
             .call(yAxis);
 
         function pad(scale, k) {
@@ -392,7 +396,7 @@ function createDots() {
 
         renderScatter();
 
-    }, 2000);
+    }, 2500);
 }
 
 function createForceLayout() {
