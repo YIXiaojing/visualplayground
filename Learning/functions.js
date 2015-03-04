@@ -21,9 +21,11 @@ var flushAnimationFrames = function () {
     Date.now = now;
 };
 
+var interText = 'Interpolators';
+
 d3.interpolators.push(function(a, b) {
     var ma, mb;
-    if (b === "INTERPOLATOR") {
+    if (b === interText) {
         return function(t) {
             var s = "";
             for(var i=0; i< a.length;i++){
@@ -60,9 +62,11 @@ interpolator = d3.select("#interpolator"),
 createCircles();
 createAxis();
 createDots();
+createQuadTreeSearch();
 enter();
 update();
 exit();
+setUpClock();
 
 aniCir.on('click', function () {
         removeAnimatedCircles();
@@ -110,16 +114,28 @@ function deactivate(d, i) {
     }
 }
 
+function stringFill(x, n) {
+    var s = '';
+    for (;;) {
+        if (n & 1) s += x;
+        n >>= 1;
+        if (n) x += x;
+        else break;
+    }
+    return s;
+}
+
 function startInterpolator(){
     d3.select('#interpolator h1')
-        .data(['INTERPOLATOR'])
+        .data([interText])
         .style('color','white')
         .style('margin-left','0em')
-        .text('AAAAAAAAAAAA')
+        .text('A' + stringFill('a', interText.length - 1))
         .transition()
-        .duration(5000)
+        .ease('bounce')
+        .duration(3000)
         .style('color','#74c476')
-        .style('margin-left','5em')
+        .style('margin-left','10em')
         .tween("text", function(d) {
             var i = d3.interpolate(this.textContent, d);
 
@@ -256,71 +272,109 @@ function createDots() {
         width = scatter.width(),
         height = scatter.height();
 
-    var xScale = pad(d3.scale.linear().domain(d3.extent(data,
-        function (d) {
-            return d.x;
-        }))
-        .range([0, width - margin.left - margin.right]), 40);
+    var svg = d3.select(scatter.get(0))
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", "dot chart")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var yScale = pad(d3.scale.linear().domain(d3.extent(data,
-        function (d) {
-            return d.y;
-        }))
-        .range([height - margin.top - margin.bottom, 0]), 40);
+    var xAxisG = svg.append("g")
+        .attr("class", "x axis");
 
-    var xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("bottom")
-        .tickPadding(8);
+    var yAxisG = svg.append("g")
+        .attr("class", "y axis");
 
-    var yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .tickPadding(8);
+    function renderScatter() {
 
-    var
-        svg = d3.select(scatter.get(0)).
-            append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("class", "dot chart")
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var xScale = pad(d3.scale.linear().domain(d3.extent(data,
+            function (d) {
+                return d.x;
+            }))
+            .range([0, width - margin.left - margin.right]), 40);
 
-    svg.
-        selectAll(".dot")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("class", "dot")
-        .attr("cx", function (d) {
-            return xScale(d.x);
-        })
-        .attr("cy", function (d) {
-            return yScale(d.y);
-        })
-        .attr("r", '0.4em');
+        var yScale = pad(d3.scale.linear().domain(d3.extent(data,
+            function (d) {
+                return d.y;
+            }))
+            .range([height - margin.top - margin.bottom, 0]), 40);
 
-    svg.
-        append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + yScale.range()[0] + ")")
-        .call(xAxis);
+        var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+            .tickPadding(8);
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+        var yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("left")
+            .tickPadding(8);
 
-    function pad(scale, k) {
-        var range
-            = scale.range();
-        if (range[0] >
+        var selection = svg.selectAll(".dot").data(data);
 
-            range[1]) k *= -1;
-        return scale.domain([
-            range[0] - k
-            , range[1] + k].map(scale.invert)).nice();
+        selection.enter()
+            .append("circle")
+            .attr('opacity',1)
+            .attr("class", "dot")
+            .attr('cy', yScale.range()[0])
+            .attr("r", '0.4em');
+
+        selection
+            .transition()
+            .duration(1000)
+            .attr("cx", function (d) {
+                return xScale(d.x);
+            })
+            .attr("cy", function (d) {
+                return yScale(d.y);
+            })
+
+        selection.exit()
+            .transition()
+            .duration(1000)
+            .attr('opacity',0)
+            .remove();
+
+        xAxisG
+            .attr("transform", "translate(0," + yScale.range()[0] + ")")
+            .transition()
+            .duration(1000)
+            .call(xAxis);
+
+        yAxisG
+            .transition()
+            .duration(1000)
+            .call(yAxis);
+
+        function pad(scale, k) {
+            var range
+                = scale.range();
+            if (range[0] >
+
+                range[1]) k *= -1;
+            return scale.domain([
+                range[0] - k
+                , range[1] + k].map(scale.invert)).nice();
+        }
     }
+
+    renderScatter();
+
+    setInterval(function () {
+        var i = Math.round(Math.random() * 10 + 2);
+
+        data = [];
+
+        for(var f=0; f< i;f++){
+            data.push({
+                x: Math.random() * 11,
+                y: Math.random() * 20
+            })
+        }
+
+        renderScatter();
+
+    }, 2000);
 }
 
 function createForceLayout() {
@@ -652,3 +706,238 @@ d3.select(canvasDiv.get(0)).on("mousemove", function () {
         .attr('fill', 'rgba(255,105,180,0)')
         .remove();
 });
+
+function createQuadTreeSearch(){
+    var quad = $('#quadTreeSvg');
+    var width = quad.width(),
+        height = quad.height();
+
+    var data = d3.range(2000).map(function() {
+        return [Math.random() * width, Math.random() * height];
+    });
+
+    var quadtree = d3.geom.quadtree()
+        .extent([[-1, -1], [width + 1, height + 1]])
+    (data);
+
+    var svg = d3.select(quad.get(0)).append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg.selectAll(".node")
+        .data(nodes(quadtree))
+        .enter().append("rect")
+        .attr("class", "node")
+        .attr("x", function(d) { return d.x0; })
+        .attr("y", function(d) { return d.y0; })
+        .attr("width", function(d) { return d.y1 - d.y0; })
+        .attr("height", function(d) { return d.x1 - d.x0; });
+
+    var point = svg.selectAll(".point")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "point")
+        .attr("cx", function(d) { return d[0]; })
+        .attr("cy", function(d) { return d[1]; })
+        .attr("r", '0.15em');
+
+    svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height)
+        .on("mousemove", mousemoved);
+
+    function mousemoved() {
+        point.each(function(d) { d.scanned = false; });
+        var p = quadtree.find(d3.mouse(this));
+        point.classed("scanned", function(d) { return d.scanned; });
+        point.classed("selected", function(d) { return d === p; });
+    }
+
+// Collapse the quadtree into an array of rectangles.
+    function nodes(quadtree) {
+        var nodes = [];
+        quadtree.visit(function(node, x0, y0, x1, y1) {
+            node.x0 = x0, node.y0 = y0;
+            node.x1 = x1, node.y1 = y1;
+            nodes.push(node);
+        });
+        return nodes;
+    }
+}
+
+function setUpClock(){
+    var clockDiv = $('#clock');
+
+    var radians = 0.0174532925,
+        clockRadius = clockDiv.height()/2 - 50,
+        margin = 50,
+        width = (clockRadius+margin)*2,
+        height = (clockRadius+margin)*2,
+        hourHandLength = 2*clockRadius/3,
+        minuteHandLength = clockRadius,
+        secondHandLength = clockRadius-12,
+        secondHandBalance = 30,
+        secondTickStart = clockRadius;
+    secondTickLength = -10,
+        hourTickStart = clockRadius,
+        hourTickLength = -18
+    secondLabelRadius = clockRadius + 16;
+    secondLabelYOffset = 5
+    hourLabelRadius = clockRadius - 40
+    hourLabelYOffset = 7;
+
+
+    var hourScale = d3.scale.linear()
+        .range([0,330])
+        .domain([0,11]);
+
+    var minuteScale = secondScale = d3.scale.linear()
+        .range([0,354])
+        .domain([0,59]);
+
+    var handData = [
+        {
+            type:'hour',
+            value:0,
+            length:-hourHandLength,
+            scale:hourScale
+        },
+        {
+            type:'minute',
+            value:0,
+            length:-minuteHandLength,
+            scale:minuteScale
+        },
+        {
+            type:'second',
+            value:0,
+            length:-secondHandLength,
+            scale:secondScale,
+            balance:secondHandBalance
+        }
+    ];
+
+    function drawClock(){ //create all the clock elements
+        updateData();	//draw them in the correct starting position
+        var svg = d3.select(clockDiv.get(0)).append("svg")
+            .attr("width", clockDiv.width())
+            .attr("height", clockDiv.height());
+
+        var face = svg.append('g')
+            .attr('id','clock-face')
+            .attr('transform','translate(' + ( (clockDiv.width() - clockRadius)/2 + margin * 2) + ',' + (  clockRadius + margin) + ')');
+
+        //add marks for seconds
+        face.selectAll('.second-tick')
+            .data(d3.range(0,60)).enter()
+            .append('line')
+            .attr('class', 'second-tick')
+            .attr('x1',0)
+            .attr('x2',0)
+            .attr('y1',secondTickStart)
+            .attr('y2',secondTickStart + secondTickLength)
+            .attr('transform',function(d){
+                return 'rotate(' + secondScale(d) + ')';
+            });
+        //and labels
+
+        face.selectAll('.second-label')
+            .data(d3.range(5,61,5))
+            .enter()
+            .append('text')
+            .attr('class', 'second-label')
+            .attr('text-anchor','middle')
+            .attr('x',function(d){
+                return secondLabelRadius*Math.sin(secondScale(d)*radians);
+            })
+            .attr('y',function(d){
+                return -secondLabelRadius*Math.cos(secondScale(d)*radians) + secondLabelYOffset;
+            })
+            .text(function(d){
+                return d;
+            });
+
+        //... and hours
+        face.selectAll('.hour-tick')
+            .data(d3.range(0,12)).enter()
+            .append('line')
+            .attr('class', 'hour-tick')
+            .attr('x1',0)
+            .attr('x2',0)
+            .attr('y1',hourTickStart)
+            .attr('y2',hourTickStart + hourTickLength)
+            .attr('transform',function(d){
+                return 'rotate(' + hourScale(d) + ')';
+            });
+
+        face.selectAll('.hour-label')
+            .data(d3.range(3,13,3))
+            .enter()
+            .append('text')
+            .attr('class', 'hour-label')
+            .attr('text-anchor','middle')
+            .attr('x',function(d){
+                return hourLabelRadius*Math.sin(hourScale(d)*radians);
+            })
+            .attr('y',function(d){
+                return -hourLabelRadius*Math.cos(hourScale(d)*radians) + hourLabelYOffset;
+            })
+            .text(function(d){
+                return d;
+            });
+
+
+        var hands = face.append('g').attr('id','clock-hands');
+
+        face.append('g').attr('id','face-overlay')
+            .append('circle').attr('class','hands-cover')
+            .attr('x',0)
+            .attr('y',0)
+            .attr('r',clockRadius/20);
+
+        hands.selectAll('line')
+            .data(handData)
+            .enter()
+            .append('line')
+            .attr('class', function(d){
+                return d.type + '-hand';
+            })
+            .attr('x1',0)
+            .attr('y1',function(d){
+                return d.balance ? d.balance : 0;
+            })
+            .attr('x2',0)
+            .attr('y2',function(d){
+                return d.length;
+            })
+            .attr('transform',function(d){
+                return 'rotate('+ d.scale(d.value) +')';
+            });
+    }
+
+    function moveHands(){
+        d3.select('#clock-hands').selectAll('line')
+            .data(handData)
+            .transition()
+            .attr('transform',function(d){
+                return 'rotate('+ d.scale(d.value) +')';
+            });
+    }
+
+    function updateData(){
+        var t = new Date();
+        handData[0].value = (t.getHours() % 12) + t.getMinutes()/60 ;
+        handData[1].value = t.getMinutes();
+        handData[2].value = t.getSeconds();
+    }
+
+    drawClock();
+
+    setInterval(function(){
+        updateData();
+        moveHands();
+    }, 1000);
+
+    d3.select(self.frameElement).style("height", height + "px");
+}

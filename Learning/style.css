@@ -15,6 +15,35 @@ rect.bar, circle.dot {
     fill: purple
 }
 
+/* Quad tree search */
+
+.point {
+    fill: #999;
+    stroke: #fff;
+}
+
+.point.scanned {
+    fill: orange;
+    fill-opacity: 1;
+    stroke: brown;
+}
+
+.point.selected {
+    fill: red;
+    fill-opacity: 1;
+}
+
+.node {
+    fill: none;
+    stroke: #ccc;
+    shape-rendering: crispEdges;
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
 section {
     background: #000;
     color: #fff;
@@ -76,7 +105,6 @@ h1 {
     font-size: 2.5em;
     font-weight: 700;
 }
-
 #interpolator h1, #canvas h1{
     margin-bottom: 0.1em;
 }
@@ -108,4 +136,52 @@ img {
     padding-top: 1em;
     padding-left: 7em;
     height: 17em;
+}
+
+#clock svg{
+    stroke: #fff;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+#rim {
+    fill: none;
+    stroke: #999;
+    stroke-width: 3px;
+}
+
+.second-hand{
+    stroke-width:3;
+
+}
+
+.minute-hand{
+    stroke-width:8;
+    stroke-linecap:round;
+}
+
+.hour-hand{
+    stroke-width:12;
+    stroke-linecap:round;
+}
+
+.hands-cover{
+    stroke-width:3;
+    fill:#000;
+}
+
+.second-tick{
+    stroke-width:3;
+    fill:#fff;
+}
+
+.hour-tick{
+    stroke-width:8; //same as the miute hand
+}
+
+.second-label{
+    font-size: 12px;
+}
+
+.hour-label{
+    font-size: 24px;
 }
