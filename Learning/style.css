@@ -101,10 +101,20 @@ a:hover {
     text-decoration: underline;
 }
 
+#builtin h1{
+    font-size: 4em;
+}
+
+
 h1 {
     font-size: 2.5em;
     font-weight: 700;
 }
+
+.small{
+    font-size: 0.5em;
+}
+
 #interpolator h1, #canvas h1{
     margin-bottom: 0.1em;
 }
@@ -184,4 +194,23 @@ img {
 
 .hour-label{
     font-size: 24px;
+}
+
+#zoomSvg svg {
+    font: 1em sans-serif;
+    shape-rendering: crispEdges;
+}
+
+#zoomSvg rect {
+
+}
+
+#zoomSvg .axis path,
+#zoomSvg .axis line {
+    fill: none;
+    stroke: #fff;
+}
+
+#d3site iframe{
+    background: #fff;
 }
