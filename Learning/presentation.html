@@ -31,7 +31,7 @@
 </section>
 
 <section style="text-align:center;padding-top:5em;">
-    <h1 class="blue">The chicken or the [a, r, r, a, y]</h1>
+    <h1 class="blue">The chicken or the [a, r, r, a, y] ?</h1>
     <code>
         <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
     </code>
@@ -42,7 +42,7 @@
         <code class="javascript">
 <span class="keyword">var</span> data = [10, 40, 30, 20, 60];
 
-<span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>);
+<span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>); <span class="grey">//empty svg element</span>
 <span class="keyword">var</span> selection = svg.selectAll(<span class="string">'.happycircles'</span>).<span class="highlighted">data(data)</span>;
 
 selection.enter()
