@@ -1,5 +1,6 @@
 var callbacks = [];
 var forceLayoutIntervalId = 0;
+var scatterIntervalId = 0;
 
 window.requestAnimationFrame = function (callback) {
     callbacks.push(callback);
@@ -49,19 +50,23 @@ $('section').css('visibility','visible');
 var section = d3.selectAll("section"),
     cir = d3.select("#circles"),
     cirIndex = section[0].indexOf(cir.node());
-aniCir = d3.select("#aniCircles"),
+    aniCir = d3.select("#aniCircles"),
     aniCirIndex = section[0].indexOf(aniCir.node()),
     theEnd = d3.select("#theend"),
     theEndIndex = section[0].indexOf(theEnd.node())
-theCanvas = d3.select("#canvas"),
+    theCanvas = d3.select("#canvas"),
     theCanvasIndex = section[0].indexOf(theCanvas.node()),
-interpolator = d3.select("#interpolator"),
-    interpolatorIndex = section[0].indexOf(interpolator.node());
+    interpolator = d3.select("#interpolator"),
+    interpolatorIndex = section[0].indexOf(interpolator.node()),
+    scatter = d3.select("#scatterPlot"),
+    scatterIndex = section[0].indexOf(scatter.node());
+
+//
 
 
 createCircles();
 createAxis();
-createDots();
+//createDots();
 createQuadTreeSearch();
 enter();
 update();
@@ -98,6 +103,8 @@ function activate(d, i) {
         setupCanvas();
     }else if(i === interpolatorIndex){
         startInterpolator();
+    }else if( i=== scatterIndex){
+        createDots();
     }
 }
 
@@ -111,6 +118,8 @@ function deactivate(d, i) {
         killForceLayout();
     } else if (i === theCanvasIndex) {
         destroyCanvas();
+    }else if( i=== scatterIndex){
+        removeDots();
     }
 }
 
@@ -215,6 +224,8 @@ function removeAnimatedCircles() {
 }
 
 function removeDots() {
+    clearInterval(scatterIntervalId);
+    flushAnimationFrames();
     $('#svgScatterPlot').empty();
 }
 
