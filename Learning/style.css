@@ -57,6 +57,9 @@ section {
     left: 0;
 }
 
+.red{
+    color: darkred;
+}
 .grey {
     color: #777;
 }
