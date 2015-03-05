@@ -73,6 +73,7 @@ update();
 exit();
 setUpClock();
 expandSitePage();
+createWebGL();
 
 aniCir.on('click', function () {
         removeAnimatedCircles();
@@ -1023,5 +1024,181 @@ function createZoom(){
         svg.select(".x.axis").call(xAxis);
         svg.select(".y.axis").call(yAxis);
     }
+}
 
+function createWebGL() {
+    var host = webGLHost = $('#webGlhost');
+
+    var t = 1297110663,
+        v = 50,
+        N = 15,
+        data = d3.range(N).map(next);
+
+    function next() {
+        return {
+            time: ++t,
+            value: v = ~~Math.max(10, Math.min(90, v + 10 * (Math.random() - .5)))
+        };
+    }
+
+    setInterval(function() {
+        data.shift();
+        data.push(next());
+        redrawGL();
+    }, 1500);
+
+    function redrawGL() {
+
+        var bars = d3.select( chart3d )
+            .selectAll("THREE.Mesh")
+            .data(data, function(d) { return d.time; });
+
+        bars.transition()
+            .duration(1000)
+            .attr("position.x", function(d, i) { return 30 * (i - N / 2); })
+
+        bars.enter().append( newBar )
+            .attr("position.x", function(d, i) { return 30 * (i - N / 2 + 1); })
+            .attr("position.y", 0)
+            .attr("scale.y", 1e-3)
+            .transition()
+            .duration(1000)
+            .attr("position.x", function(d, i) { return 30 * (i - N / 2); })
+            .attr("position.y", function(d, i) { return d.value; })
+            .attr("scale.y", function(d, i) { return d.value / 10; })
+
+        bars.exit().transition()
+            .duration(1000)
+            .attr("position.x", function(d, i) { return 30 * (i - N / 2 - 1); })
+            .attr("position.y", 0)
+            .attr("scale.y", 1e-3)
+            .remove()
+    }
+
+    THREE.Object3D.prototype.appendChild = function (c) { this.add(c); c.parentNode = this; return c; };
+
+    THREE.Object3D.prototype.removeChild = function (c) { this.remove(c); }
+
+    THREE.Object3D.prototype.querySelectorAll = function (selector) {
+        var matches = [];
+        var type = eval(selector);
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            if (child instanceof type) {
+                matches.push(child);
+            }
+        }
+        return matches;
+    }
+
+    THREE.Object3D.prototype.locateAttribute = function (name) {
+        var chain = name.split('.');
+        var object = this;
+        for (var i = 0; i < chain.length - 1; i++) {
+            object = object[chain[i]];
+        }
+        return {
+            object: object,
+            name: chain[chain.length - 1]
+        }
+    }
+
+    THREE.Object3D.prototype.getAttribute = function (name) {
+        var attribute = this.locateAttribute (name);
+        return attribute.object[attribute.name];
+    }
+
+    THREE.Object3D.prototype.setAttribute = function (name, value) {
+        var attribute = this.locateAttribute (name);
+        attribute.object[attribute.name] = value;
+    }
+
+    var camera, scene, renderer, chart3d, newBar, doRotate = false;
+
+    function init () {
+        // standard THREE stuff, straight from examples
+        try {
+            renderer = new THREE.WebGLRenderer();
+        } catch (oops) {
+            renderer = new THREE.CanvasRenderer();
+        }
+
+        renderer.setSize( host.width(), host.height() );
+        host.get(0).appendChild( renderer.domElement );
+
+        camera = new THREE.PerspectiveCamera( 70, host.width()/ host.height(), 1, 1000 );
+        camera.position.z = 400;
+
+        scene = new THREE.Scene();
+
+        var light = new THREE.DirectionalLight( 0xffffff );
+        light.position.set( 0, 0, 1 );
+        scene.add( light );
+
+        var geometry = new THREE.CubeGeometry( 20, 20, 20 );
+        var material = new THREE.MeshLambertMaterial( {
+            color: 0xBCC11F, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+        // create container for our 3D chart
+        chart3d = new THREE.Object3D();
+        chart3d.rotation.x = 0;
+        scene.add( chart3d );
+
+        // create function for D3 to set up 3D bars
+        newBar = function() { return new THREE.Mesh( geometry, material ); }
+
+        // continue with THREE stuff
+        window.addEventListener( 'resize', onWindowResize, false );
+    }
+
+    function onWindowResize() {
+
+        camera.aspect = host.width() / host.height();
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( host.width(), host.height() );
+
+    }
+
+    function animate() {
+
+        window.requestAnimationFrame( animate );
+
+        /*if(doRotate){
+         chart3d.rotation.y += 0.01;
+         }else{
+         chart3d.rotation.y =0
+         }*/
+
+        renderer.render( scene, camera );
+
+    }
+
+    init();
+    redrawGL();
+
+    d3.timer(animate);
+
+    var isDragging = false;
+    var x = 0;
+    var y = 0;
+
+    host
+        .mousedown(function(e) {
+            x = e.offsetX;
+            y = e.offsetY;
+            host.mousemove(function(e) {
+                isDragging = true;
+                chart3d.rotation.y = -(x - e.offsetX)/50;
+                chart3d.rotation.x = -(y - e.offsetY)/50;
+            });
+        })
+        .mouseup(function() {
+            var wasDragging = isDragging;
+            isDragging = false;
+            host.unbind("mousemove");
+            if (!wasDragging) {
+                console.log('click ...')
+            }
+        });
 }
