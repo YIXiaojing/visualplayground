@@ -272,17 +272,17 @@ function createAxis(){
 function createDots() {
 
     var data = [
-        {x: 10.0, y: 9.14},
-        {x: 8.0, y: 8.14},
-        {x: 13.0, y: 8.74},
-        {x: 9.0, y: 8.77},
-        {x: 11.0, y: 9.26},
-        {x: 14.0, y: 8.10},
-        {x: 6.0, y: 6.13},
-        {x: 4.0, y: 3.10},
-        {x: 12.0, y: 9.13},
-        {x: 7.0, y: 7.26},
-        {x: 5.0, y: 4.74},
+        {x: 10.0, y: 9.14, r: 0.4},
+        {x: 8.0, y: 8.14, r: 0.4},
+        {x: 13.0, y: 8.74, r: 0.4},
+        {x: 9.0, y: 8.77, r: 0.4},
+        {x: 11.0, y: 9.26, r: 0.4},
+        {x: 14.0, y: 8.10, r: 0.4},
+        {x: 6.0, y: 6.13, r: 0.4},
+        {x: 4.0, y: 3.10, r: 0.4},
+        {x: 12.0, y: 9.13, r: 0.4},
+        {x: 7.0, y: 7.26, r: 0.4},
+        {x: 5.0, y: 4.74, r: 0.4},
     ];
 
     var t = 1500;
@@ -333,11 +333,10 @@ function createDots() {
 
         selection.enter()
             .append("circle")
-            .attr('opacity',1)
-            .attr('fill','orange')
+            .attr('opacity',0.8)
+            .attr('fill','green')
             .attr("class", "dot")
-            .attr('cy', yScale.range()[0])
-            .attr("r", '0.4em');
+            .attr('cy', yScale.range()[0]);
 
         selection
             .transition()
@@ -349,10 +348,12 @@ function createDots() {
             .attr("cy", function (d) {
                 return yScale(d.y);
             })
+            .attr("r", function(d){return d.r + 'em'});
 
         selection.exit()
             .transition()
             .duration(t)
+            .attr('fill', 'red')
             .attr('opacity',0)
             .attr('r','3em')
             .remove();
@@ -390,7 +391,8 @@ function createDots() {
         for(var f=0; f< i;f++){
             data.push({
                 x: Math.random() * 11,
-                y: Math.random() * 20
+                y: Math.random() * 20,
+                r: Math.random() + 0.1
             })
         }
 
