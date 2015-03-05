@@ -336,7 +336,8 @@ function createDots() {
             .attr('opacity',0.8)
             .attr('fill','green')
             .attr("class", "dot")
-            .attr('cy', yScale.range()[0]);
+            .attr('cy', yScale.range()[0])
+            .attr("r",'0.4em');
 
         selection
             .transition()
