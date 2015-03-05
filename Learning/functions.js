@@ -1028,6 +1028,7 @@ function createZoom(){
 
 function createWebGL() {
     var host = webGLHost = $('#webGlhost');
+    var doRotate = false;
 
     var t = 1297110663,
         v = 50,
@@ -1113,7 +1114,7 @@ function createWebGL() {
         attribute.object[attribute.name] = value;
     }
 
-    var camera, scene, renderer, chart3d, newBar, doRotate = false;
+    var camera, scene, renderer, chart3d, newBar;
 
     function init () {
         // standard THREE stuff, straight from examples
@@ -1162,16 +1163,11 @@ function createWebGL() {
 
     function animate() {
 
-        window.requestAnimationFrame( animate );
+        if (doRotate) {
+            chart3d.rotation.y += 0.01;
+        }
 
-        /*if(doRotate){
-         chart3d.rotation.y += 0.01;
-         }else{
-         chart3d.rotation.y =0
-         }*/
-
-        renderer.render( scene, camera );
-
+        renderer.render(scene, camera);
     }
 
     init();
