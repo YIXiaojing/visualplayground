@@ -389,7 +389,7 @@ function createDots() {
 
         data = [];
 
-        for(var f=0; f< i;f++){
+        for(var f=0; f < i;f++){
             data.push({
                 x: Math.random() * 11,
                 y: Math.random() * 20,
