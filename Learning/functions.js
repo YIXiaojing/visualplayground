@@ -1136,20 +1136,69 @@ function createWebGL() {
         light.position.set( 0, 0, 1 );
         scene.add( light );
 
-        var geometry = new THREE.CubeGeometry( 20, 20, 20 );
-        var material = new THREE.MeshLambertMaterial( {
-            color: 0xBCC11F, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
-
         // create container for our 3D chart
         chart3d = new THREE.Object3D();
         chart3d.rotation.x = 0;
         scene.add( chart3d );
 
-        // create function for D3 to set up 3D bars
-        newBar = function() { return new THREE.Mesh( geometry, material ); }
+        newBar = createBarMesh();
 
-        // continue with THREE stuff
         window.addEventListener( 'resize', onWindowResize, false );
+    }
+
+    function createBarMesh(){
+        var geometry = new THREE.CubeGeometry( 20, 20, 20 );
+        var material = new THREE.MeshLambertMaterial( {
+            color: 0xBCC11F, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+        return function() {
+            return new THREE.Mesh( geometry, material );
+        };
+    }
+
+    function createCylinderMesh(){
+        return function() {
+            return new THREE.Mesh(
+                new THREE.CylinderGeometry(10, 10, 20, 50, 50, false),
+                new THREE.MeshNormalMaterial())
+        }
+    }
+
+    function createBottleGeometry(){
+        var points = []; var segments = 28;
+
+        points.push( new THREE.Vector3( 0, 0, 0 ) );
+
+        for ( var i = 0; i <= 12.5; i = i + 0.1 ) {
+            points.push( new THREE.Vector3( 85 - 10 * Math.atan( Math.exp( 3 * i - 27 ) ), 0, 24 * i ) );
+        }
+
+        var geometry = new THREE.LatheGeometry( points, segments );
+        geometry.computeBoundingBox();
+
+        return geometry;
+    }
+
+    function createMesh(texture){
+
+        var geometry = createBottleGeometry();
+        var materialBack = new THREE.MeshPhongMaterial( {
+            color: 0xFFFFF0,
+            ambient: 0x00cc00,
+            specular: 0xF0FFF0,
+            shininess: 5,
+            side: THREE.BackSide,
+            transparent: true,
+            blending: THREE.NormalBlending,
+            depthTest: true,
+            opacity: 0.8
+        } );
+
+        var Texture = new THREE.ImageUtils.loadTexture( texture );
+        Texture.wrapS = Texture.wrapT = THREE.RepeatWrapping;
+        Texture.repeat.set( 1, 1 );
+
+        return new THREE.Mesh( geometry, materialBack );
     }
 
     function onWindowResize() {
@@ -1179,6 +1228,9 @@ function createWebGL() {
     var x = 0;
     var y = 0;
 
+    $('#meshBtn').on('click', function(){
+        newBar = createCylinderMesh();
+    })
     host
         .mousedown(function(e) {
             x = e.offsetX;

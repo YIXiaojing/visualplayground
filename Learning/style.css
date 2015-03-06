@@ -216,3 +216,16 @@ img {
 #d3site iframe{
     background: #fff;
 }
+
+.styled-button-11 {
+    background: #69d1e6;
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#FEDA71',endColorstr='#FEBB49',GradientType=0);
+    padding:8px 18px;
+    color: rgb(4, 4, 4);
+    font-size:14px;
+    font-weight: 700;
+    border-radius:48px;
+    -moz-border-radius:48px;
+    -webkit-border-radius:48px;
+    border:1px solid #623F1D
+}
