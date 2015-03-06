@@ -42,7 +42,7 @@
         <code class="javascript">
 <span class="keyword">var</span> myData = [10, 40, 30, 20, 60];
 
-<span class="keyword">var</span> svg = d3.select(<span class="string">'#svgCircles'</span>); <span class="grey">//empty svg element</span>
+<span class="keyword">var</span> svg = <span class="d3">d3</span>.select(<span class="string">'#svgCircles'</span>); <span class="grey">//empty svg element</span>
 <span class="keyword">var</span> selection = svg.selectAll(<span class="string">'.happycircles'</span>).<span class="highlighted">data(myData)</span>;
 
 selection.enter()
