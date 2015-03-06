@@ -229,3 +229,38 @@ img {
     -webkit-border-radius:48px;
     border:1px solid #623F1D
 }
+
+section aside {
+    background: #FFF8B8;
+    background-image: -webkit-linear-gradient(top, #FFF8B8, #FEED77);
+    box-shadow: 0 8px 16px rgba(0,0,0,.5);
+    color: #000;
+    display: block;
+    font-size: 16px;
+    padding: 16px;
+    position: absolute;
+    right: 40px;
+    bottom: 120px;
+    width: 328px;
+    -o-transform: rotate(-1deg);
+    -ms-transform: rotate(-1deg);
+    -moz-transform: rotate(-1deg);
+    -webkit-transform: rotate(-1deg);
+    -o-transition: opacity 100ms linear;
+    -ms-transition: opacity 100ms linear;
+    -moz-transition: opacity 100ms linear;
+    -webkit-transition: opacity 100ms linear;
+}
+
+section aside a:link, section aside a:visited {
+    color: darkblue;
+}
+
+section aside p:last-child {
+    margin-bottom: 0;
+}
+
+section aside:hover {
+    opacity: .5;
+}
+
