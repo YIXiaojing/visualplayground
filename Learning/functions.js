@@ -1235,9 +1235,15 @@ function createWebGL() {
     var isDragging = false;
     var x = 0;
     var y = 0;
+    var toggleMesh = false;
 
     $('#meshBtn').on('click', function(){
-        newBar = createCylinderMesh();
+        toggleMesh = !toggleMesh;
+        if(toggleMesh) {
+            newBar = createCylinderMesh();
+        }else{
+            newBar = createBarMesh();
+        }
     })
     host
         .mousedown(function(e) {
