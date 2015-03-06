@@ -1,6 +1,7 @@
 var callbacks = [];
 var forceLayoutIntervalId = 0;
 var scatterIntervalId = 0;
+var webglCreated = false;
 
 window.requestAnimationFrame = function (callback) {
     callbacks.push(callback);
@@ -59,7 +60,9 @@ var section = d3.selectAll("section"),
     interpolator = d3.select("#interpolator"),
     interpolatorIndex = section[0].indexOf(interpolator.node()),
     scatter = d3.select("#scatterPlot"),
-    scatterIndex = section[0].indexOf(scatter.node());
+    scatterIndex = section[0].indexOf(scatter.node()),
+        webgl = d3.select("#webgl"),
+        webglIndex = section[0].indexOf(webgl.node());
 
 //
 
@@ -73,7 +76,7 @@ update();
 exit();
 setUpClock();
 expandSitePage();
-createWebGL();
+//createWebGL();
 
 aniCir.on('click', function () {
         removeAnimatedCircles();
@@ -107,6 +110,11 @@ function activate(d, i) {
         startInterpolator();
     }else if( i=== scatterIndex){
         createDots();
+    }else if( i=== webglIndex){
+        webglCreated = true;
+        if(webglCreated) {
+            createWebGL();
+        }
     }
 }
 
