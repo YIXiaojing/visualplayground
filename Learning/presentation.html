@@ -59,14 +59,14 @@
     <h1 class="blue">Data Join Example: Enter</h1>
     <pre>
         <code class="javascript">
-            <span class="keyword">var</span> myData = [10, 40, 30, 20, 60];
+<span class="keyword">var</span> myData = [10, 40, 30, 20, 60];
 
-            <span class="keyword">var</span> svg = <span class="d3">d3</span>.select(<span class="string">'#svgCircles'</span>); <span class="grey">//empty svg element</span>
-            <span class="keyword">var</span> selection = svg.selectAll(<span class="string">'.happycircles'</span>).<span class="highlighted">data(myData)</span>;
+<span class="keyword">var</span> svg = <span class="d3">d3</span>.select(<span class="string">'#svgCircles'</span>); <span class="grey">//empty svg element</span>
+<span class="keyword">var</span> selection = svg.selectAll(<span class="string">'.happycircles'</span>).<span class="highlighted">data(myData)</span>;
 
-            selection.enter()
-            .append(<span class="string">'circle'</span>)
-            .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
+selection.enter()
+    .append(<span class="string">'circle'</span>)
+    .classed(<span class="string">'happycircles'</span>, <span class="keyword">true</span>);
         </code>
     </pre>
 </section>
@@ -74,17 +74,17 @@
 <section>
     <h1 class="blue">Data Join Example: Update & Exit</h1>
     <pre>
-    <code class="javascript">
-        selection
-        .attr({
+<code class="javascript">
+selection
+    .attr({
         <span class="variable">cx</span>: <span class="function">function</span>(d, i){ <span class="keyword">return</span> (i + 1) * 100; },
         <span class="variable">cy</span>: 150,
         <span class="variable">r</span>: <span class="function">function</span>(d) { <span class="keyword">return</span> d; },
         <span class="variable">fill</span>: 'purple'
-        });
+    });
 
-        selection.exit().remove();
-    </code>
+selection.exit().remove();
+</code>
         </pre>
 </section>
 
