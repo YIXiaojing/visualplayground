@@ -83,7 +83,7 @@ section {
     color: mediumpurple;
 }
 
-.variable {
+.variable, .green {
     color: yellowgreen;
 }
 
@@ -146,10 +146,17 @@ h2 {
     width: 35em;
 }
 
+
 img {
     padding-top: 1em;
     padding-left: 7em;
     height: 17em;
+}
+
+#join img{
+    padding-top: 0em;
+    padding-left: 0em;
+    height: 10em;
 }
 
 #clock svg{
