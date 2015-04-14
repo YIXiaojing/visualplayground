@@ -8,18 +8,16 @@
 <div>Printing out One Million DOM elements using buffering ...></div>
 <script>
     function fast() {
-        /* 11-29-02 */
         function timer(f) {
             return function (x) {
                 var n1 = new Date();
-                f(x); // do something here
+                f(x); 
                 return new Date() - n1;
             };
         }
 
         function m(n) {
             var b = new Array(n), i = 0;
-            /* in actuality I would like to do b = [] */
             do {
                 b[i] = ++i;
             } while (i < n);
