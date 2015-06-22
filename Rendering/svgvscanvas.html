@@ -143,9 +143,18 @@
     function drawD3() {
         var c = svg
                 .selectAll('rect')
-                .data(data)
-                .enter()
-                .append('rect');
+                .data(data);
+                
+                c.enter()
+                .append('rect')
+                .on('click', function () {
+            d3.select(this).attr('fill', 'red')
+                    .transition()
+                    .duration(duration)
+                    .attr({
+                        x: aniX
+                    })
+        });
 
         c.attr({
             x: function (d) {
@@ -160,14 +169,9 @@
             fill: function (d) {
                 return d.color;
             }
-        }).on('click', function () {
-            d3.select(this).attr('fill', 'red')
-                    .transition()
-                    .duration(duration)
-                    .attr({
-                        x: aniX
-                    })
         })
+        
+        c.exit().remove();
     }
 
     function drawCanvas() {
