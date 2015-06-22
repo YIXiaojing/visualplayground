@@ -98,8 +98,9 @@
     function drawD3Canvas() {
         var c = d3CanvasContainer
                 .selectAll('rect')
-                .data(data)
-                .enter()
+                .data(data);
+                
+                c.enter()
                 .append('custom')
                 .classed('rect', true)
 
@@ -117,6 +118,8 @@
                 return d.color;
             }
         })
+        
+        c.exit().remove();
         renderD3Canvas();
     }
 
