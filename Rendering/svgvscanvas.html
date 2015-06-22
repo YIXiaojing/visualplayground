@@ -31,6 +31,7 @@
 <button onclick="draw(0)">Draw SVG</button>
 <button onclick="draw(1)">Draw Canvas</button>
 <button onclick="draw(2)">Draw D3 Canvas</button>
+<button onclick="draw(3)">Draw SVG (same data without clearing)</button>
 <input id="sampling" value="4">
 <span> x </span>
 <input id="elements" value="10000">
@@ -202,8 +203,9 @@
         var count = parseInt($('#sampling').val());
         var endTime;
         for (var f = 0; f < count; f++) {
-            if (i == 0) {
-                svgJq.empty();
+            if (i == 0 || i == 3) {
+                if(i==0)
+                    svgJq.empty();
                 var startTime = new Date().getTime();
                 drawD3();
                 endTime = new Date().getTime() - startTime;
