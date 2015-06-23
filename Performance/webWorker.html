@@ -43,7 +43,7 @@
         document.getElementById('1').textContent = 'UI Thread took ' + (end - start) + 'ms';
 
         largeArr = [];
-        for(var h=0;h<1000000;h++){
+        for(var h=0;h<tCount;h++){
             largeArr.push('hello'+i);
         }
         start = new Date().getTime();
