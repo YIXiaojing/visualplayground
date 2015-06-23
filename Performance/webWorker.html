@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="worker.js"></script>
+    <style>
+        .cool {
+            background: orange;
+            font-size: 4em;
+        }
+
+        .cool:hover {
+            background: greenyellow;
+        }
+
+        button{
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+<div class="cool">Hover over me</div>
+<button onclick="run()">Start</button>
+<div id='1'></div>
+<div id='2'></div>
+
+<script>
+    var pTasks = 5;
+    run = function()
+    {
+        var x = 0;
+        var start;
+        var end;
+
+
+        start = new Date().getTime();
+        for (var i = 0; i < pTasks; i++) {
+            task();
+        }
+
+        end = new Date().getTime();
+        document.getElementById('1').textContent = 'UI Thread took ' + (end - start) + 'ms';
+
+        largeArr = [];
+        for(var h=0;h<1000000;h++){
+            largeArr.push('hello'+i);
+        }
+        start = new Date().getTime();
+
+        var arr = [];
+        for (var i = 0; i < pTasks; i++) {
+            arr.push(new Worker('worker.js'));
+            arr[i].onmessage = function (e) {
+                x++;
+                if (x == pTasks) {
+                    end = new Date().getTime();
+                    document.getElementById('2').textContent = 'workers took ' + (end - start) + 'ms';
+                }
+            };
+            arr[i].postMessage({name: h}, []);
+        }
+    }
+</script>
+</body>
+</html>
