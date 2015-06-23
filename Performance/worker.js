@@ -3,7 +3,7 @@
  */
 
 self.onmessage = function (e) {
-    window.task();
+    task();
     self.postMessage(e.data, []);
     self.close();
 };
