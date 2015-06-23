@@ -3,7 +3,11 @@
  */
 
 self.onmessage = function (e) {
-    window.task();
+    var str = '';
+    var c = e.data.name;
+    for (var i = 0; i < c; i++)
+        str += '' + (i * i * i)
+        
     self.postMessage(e.data, []);
     self.close();
 };
