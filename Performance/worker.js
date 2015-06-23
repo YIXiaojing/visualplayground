@@ -9,9 +9,3 @@ self.onmessage = function (e) {
     self.postMessage(e.data, []);
     self.close();
 };
-
-var task = function () {
-    var str = '';
-    for (var i = 0; i < tCount; i++)
-        str += '' + (i * i * i)
-};
