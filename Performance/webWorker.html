@@ -26,11 +26,11 @@
 <div id='2'></div>
 
 <script>
-var tCount = 1000000;
+window.tCount = 1000000;
 
 window.task = function () {
     var str = '';
-    var c = window.tCount;
+    var c = tCount;
     for (var i = 0; i < c; i++)
         str += '' + (i * i * i)
 };
