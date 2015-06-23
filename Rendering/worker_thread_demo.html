@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .cool{
+            background: orange;
+            height: 100px;
+            width: 100px;
+        }
+        .cool:hover{
+            background: greenyellow;
+        }
+    </style>
+</head>
+<body>
+<div id='1' class="cool"></div>
+<div id='2' class="cool"></div>
+
+<script>
+    var x = 0;
+    var start;
+    var end;
+    var num = 4;
+
+    var task = function () {
+        var str = '';
+        for(var i=0; i< 1000000; i++)
+            str+= '' + (i*i*i)
+    }
+
+    start = new Date().getTime();
+    for(var i=0;i<num;i++) {
+        task();
+    }
+    end = new Date().getTime();
+    document.getElementById('1').textContent = 'UI Thread took ' + (end - start) + 'ms';
+
+    var done = function(e) {
+        x++;
+        if(x==num) {
+            end = new Date().getTime();
+            document.getElementById('2').textContent = 'workers took ' + (end - start) + 'ms';
+        }
+    };
+
+
+    start = new Date().getTime();
+
+    var blobURL = URL.createObjectURL( new Blob([ '(',
+
+        function(){
+            var str = '';
+            for(var i=0; i< 1000000; i++)
+                str+= '' + (i*i*i);
+            self.postMessage('done')
+        }.toString(),
+
+        ')()' ], { type: 'application/javascript' } ) );
+
+    var arr = [];
+    for(var i=0;i<num;i++) {
+        //var j = {name:'hello'}
+        arr.push(new Worker(blobURL));
+        arr[i].addEventListener('message', done, false);
+    }
+
+    for(var i=0;i<num;i++) {
+        arr[i].postMessage(null,[]);
+    }
+</script>
+</body>
+</html>
