@@ -26,9 +26,9 @@
 <div id='2'></div>
 
 <script>
-window.tCount = 1000000;
+var tCount = 1000000;
 
-window.task = function () {
+task = function () {
     var str = '';
     var c = tCount;
     for (var i = 0; i < c; i++)
@@ -51,10 +51,6 @@ window.task = function () {
         end = new Date().getTime();
         document.getElementById('1').textContent = 'UI Thread took ' + (end - start) + 'ms';
 
-        largeArr = [];
-        for(var h=0;h<tCount;h++){
-            largeArr.push('hello'+i);
-        }
         start = new Date().getTime();
 
         var arr = [];
@@ -67,7 +63,7 @@ window.task = function () {
                     document.getElementById('2').textContent = 'workers took ' + (end - start) + 'ms';
                 }
             };
-            arr[i].postMessage({name: h}, []);
+            arr[i].postMessage({name: tCount}, []);
         }
     }
 </script>
