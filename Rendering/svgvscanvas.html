@@ -18,11 +18,17 @@
             float: left;
         }
 
+        #webglCanvas{
+            float: left;
+            margin-left: 10px;
+        }
+
     </style>
     <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
     <script src="//d3js.org/d3.v3.min.js" type="text/javascript"></script>
     <script src="//code.createjs.com/easeljs-0.8.0.min.js"></script>
     <script src="//code.createjs.com/tweenjs-0.6.0.min.js"></script>
+    <script src="two.js"></script>
 </head>
 <body>
 <div>
@@ -32,6 +38,7 @@
 <button onclick="draw(1)">Draw Canvas</button>
 <button onclick="draw(2)">Draw D3 Canvas</button>
 <button onclick="draw(3)">Draw SVG (same data without clearing)</button>
+<button onclick="draw(4)">Draw WebGL</button>
 <input id="sampling" value="1">
 <span> x </span>
 <input id="elements" value="1000">
@@ -40,11 +47,13 @@
     <svg id="svg"></svg>
 </div>
 <canvas id="demoCanvas"></canvas>
+<div id="webglCanvas"></div>
 <div id="d3canvas"></div>
 <div id="result0"></div>
 <div id="result1"></div>
 <div id="result2"></div>
 <div id="result3"></div>
+<div id="result4"></div>
 <script>
 
     var data = [];
@@ -62,6 +71,10 @@
             .attr("height", dim);
 
     var context = d3Canvas.node().getContext("2d");
+
+    var elem = $('#webglCanvas');
+
+    elem.width(dim).height(dim);
 
     svgJq.attr(
             {
@@ -205,8 +218,20 @@
         stage.update();
     }
 
+    function drawWebgl(two){
+        for (var i = 0, len = data.length; i < len; i++) {
+            var d = data[i];
+            var rect = two.makeRectangle(d.x, d.y, radius, radius);
+            rect.fill = d.color;
+            rect.noStroke();
+        }
+
+
+        two.update();
+    }
+
     function draw(i) {
-        var arr = ['SVG (using D3)', 'Canvas (with easel)', 'Canvas (with D3)','SVG (same data, no clear)'];
+        var arr = ['SVG (using D3)', 'Canvas (with easel)', 'Canvas (with D3)','SVG (same data, no clear)','WebGL'];
         var totalTime = 0;
         var count = parseInt($('#sampling').val());
         var endTime;
@@ -221,7 +246,15 @@
                 var startTime = new Date().getTime();
                 drawCanvas();
                 endTime = new Date().getTime() - startTime;
-            } else {
+            } else if (i == 4) {
+                elem.empty();
+                var params = { width: dim, height: dim , type:Two.Types.webgl}
+                var two = new Two(params).appendTo(elem[0]);
+
+                var startTime = new Date().getTime();
+                drawWebgl(two)
+                endTime = new Date().getTime() - startTime;
+            }else {
                 $('#d3canvas').empty();
                 d3CanvasContainer = d3.select($('#d3canvas').get(0));
                 d3Canvas = d3CanvasContainer.append("canvas")
