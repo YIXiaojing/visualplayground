@@ -220,16 +220,16 @@
     }
 
     function drawWebgl(stage, renderer){
+                    var graphics = new PIXI.Graphics();
         for (var i = 0, len = data.length; i < len; i++) {
             var d = data[i];
-            var graphics = new PIXI.Graphics();
 
             graphics.beginFill(d.colorN,0.3);
 
             graphics.drawRect(d.x, d.y, radius, radius);
-
-            stage.addChild(graphics);
         }
+        
+                    stage.addChild(graphics);
 
         renderer.render(stage);
     }
