@@ -28,11 +28,11 @@
     <script src="//d3js.org/d3.v3.min.js" type="text/javascript"></script>
     <script src="//code.createjs.com/easeljs-0.8.0.min.js"></script>
     <script src="//code.createjs.com/tweenjs-0.6.0.min.js"></script>
-    <script src="two.js"></script>
+    <script src="pixi.js"></script>
 </head>
 <body>
 <div>
-    Rendering test to draw some translucent shapes with SVG (with D3JS) & Canvas(with EaselJS & D3)
+    Rendering test to draw some translucent shapes with SVG (with D3JS) & Canvas(with EaselJS & D3) & WBGL(TWO.js)
 </div>
 <button onclick="draw(0)">Draw SVG</button>
 <button onclick="draw(1)">Draw Canvas</button>
@@ -102,7 +102,8 @@
                 + Math.round(Math.random() * 255)
                 + ',' + Math.round(Math.random() * 255)
                 + ',' + Math.round(Math.random() * 255)
-                + ',0.3)'
+                + ',0.3)',
+                colorN: Math.round(16581375 * Math.random() * 255)
             });
         }
     }
@@ -218,16 +219,19 @@
         stage.update();
     }
 
-    function drawWebgl(two){
+    function drawWebgl(stage, renderer){
         for (var i = 0, len = data.length; i < len; i++) {
             var d = data[i];
-            var rect = two.makeRectangle(d.x, d.y, radius, radius);
-            rect.fill = d.color;
-            rect.noStroke();
+            var graphics = new PIXI.Graphics();
+
+            graphics.beginFill(d.colorN,0.3);
+
+            graphics.drawRect(d.x, d.y, radius, radius);
+
+            stage.addChild(graphics);
         }
 
-
-        two.update();
+        renderer.render(stage);
     }
 
     function draw(i) {
@@ -248,11 +252,14 @@
                 endTime = new Date().getTime() - startTime;
             } else if (i == 4) {
                 elem.empty();
-                var params = { width: dim, height: dim , type:Two.Types.webgl}
-                var two = new Two(params).appendTo(elem[0]);
+
+                var renderer = new PIXI.WebGLRenderer(dim, dim,{backgroundColor : 0xFFFFFF});
+
+                elem[0].appendChild(renderer.view);
+                var stage = new PIXI.Container();
 
                 var startTime = new Date().getTime();
-                drawWebgl(two)
+                drawWebgl(stage, renderer)
                 endTime = new Date().getTime() - startTime;
             }else {
                 $('#d3canvas').empty();
@@ -268,7 +275,7 @@
             totalTime += endTime;
         }
 
-        $('#result' + i).text('Average rendering ' + arr[i] + ' took ' + Math.round(endTime / count) + ' ms');
+        $('#result' + i).text('Average rendering ' + arr[i] + ' took ' + Math.round(totalTime/ count) + ' ms');
     }
 
     createData(numNodes);
