@@ -18,14 +18,23 @@
 
         button{
             font-size: 2em;
+            margin-top: 10px;
+        }
+
+        br{
+            padding: 10px;
+        }
+
+        div{
+            padding-top: 10px;
         }
     </style>
 </head>
 <div class="cool">Hover to test UI responsiveness</div>
 <button onclick="run()">Start</button>
-<br>
+<div></div>
 <span>Task weight(higher number = longer running task): </span><input type="number" id="tCount" value="1000000">
-<br>
+<div></div>
 <span>Number of parallel tasks (will be serial for UI thread): </span><input type=number id="pCount" value="5">
 <div id="r"></div>
 <div id='1'></div>
