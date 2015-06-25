@@ -4,7 +4,7 @@
 
 self.onmessage = function (e) {
     var str = '';
-    var c = e.data.name;
+    var c = e.data.count;
     for (var i = 0; i < c; i++)
         str += '' + (i * i * i)
         
