@@ -18,7 +18,7 @@
             float: left;
         }
 
-        #webglCanvas{
+        #webglCanvas {
             float: left;
             margin-left: 10px;
         }
@@ -29,6 +29,7 @@
     <script src="//code.createjs.com/easeljs-0.8.0.min.js"></script>
     <script src="//code.createjs.com/tweenjs-0.6.0.min.js"></script>
     <script src="pixi.js"></script>
+    <script src="two.js"></script>
 </head>
 <body>
 <div>
@@ -36,9 +37,11 @@
 </div>
 <button onclick="draw(0)">Draw SVG</button>
 <button onclick="draw(1)">Draw Canvas</button>
-<button onclick="draw(2)">Draw D3 Canvas</button>
+<!--<button onclick="draw(2)">Draw D3 Canvas</button> -->
 <button onclick="draw(3)">Draw SVG (same data without clearing)</button>
-<button onclick="draw(4)">Draw WebGL</button>
+<button onclick="draw(4)">Draw WebGL (with pixi.js)</button>
+<button onclick="draw(5)">Draw Canvas (with pixi.js)</button>
+
 <input id="sampling" value="1">
 <span> x </span>
 <input id="elements" value="1000">
@@ -48,12 +51,14 @@
 </div>
 <canvas id="demoCanvas"></canvas>
 <div id="webglCanvas"></div>
+<div id="webglCanvas2"></div>
 <div id="d3canvas"></div>
 <div id="result0"></div>
 <div id="result1"></div>
 <div id="result2"></div>
 <div id="result3"></div>
 <div id="result4"></div>
+<div id="result5"></div>
 <script>
 
     var data = [];
@@ -72,9 +77,10 @@
 
     var context = d3Canvas.node().getContext("2d");
 
-    var elem = $('#webglCanvas');
-
-    elem.width(dim).height(dim);
+    var webgl = $('#webglCanvas');
+    webgl.width(dim).height(dim);
+    var webgl2 = $('#webglCanvas2');
+    webgl2.width(dim).height(dim);
 
     svgJq.attr(
             {
@@ -113,8 +119,8 @@
         var c = d3CanvasContainer
                 .selectAll('rect')
                 .data(data);
-                
-                c.enter()
+
+        c.enter()
                 .append('custom')
                 .classed('rect', true)
 
@@ -132,7 +138,7 @@
                 return d.color;
             }
         })
-        
+
         c.exit().remove();
         renderD3Canvas();
     }
@@ -158,17 +164,17 @@
         var c = svg
                 .selectAll('rect')
                 .data(data);
-                
-                c.enter()
+
+        c.enter()
                 .append('rect')
                 .on('click', function () {
-            d3.select(this).attr('fill', 'red')
-                    .transition()
-                    .duration(duration)
-                    .attr({
-                        x: aniX
-                    })
-        });
+                    d3.select(this).attr('fill', 'red')
+                            .transition()
+                            .duration(duration)
+                            .attr({
+                                x: aniX
+                            })
+                });
 
         c.attr({
             x: function (d) {
@@ -184,7 +190,7 @@
                 return d.color;
             }
         })
-        
+
         c.exit().remove();
     }
 
@@ -219,29 +225,42 @@
         stage.update();
     }
 
-    function drawWebgl(stage, renderer){
-                    var graphics = new PIXI.Graphics();
+    function drawWebgl(stage, renderer) {
+        var graphics = new PIXI.Graphics();
         for (var i = 0, len = data.length; i < len; i++) {
             var d = data[i];
 
-            graphics.beginFill(d.colorN,0.3);
-
+            graphics.beginFill(d.colorN, 0.3);
             graphics.drawRect(d.x, d.y, radius, radius);
         }
-        
-                    stage.addChild(graphics);
 
+        stage.addChild(graphics);
         renderer.render(stage);
     }
 
+    function drawWebgl2(two){
+        for (var i = 0, len = data.length; i < len; i++) {
+            var d = data[i];
+
+            var rect = two.makeRectangle(d.x, d.y, radius, radius);
+            rect.fill = d.color;
+            //rect.opacity = 0.3;
+            rect.noStroke();
+        }
+
+        two.appendTo(webgl2.get(0));
+
+        two.update();
+    }
+
     function draw(i) {
-        var arr = ['SVG (using D3)', 'Canvas (with easel)', 'Canvas (with D3)','SVG (same data, no clear)','WebGL'];
+        var arr = ['SVG (using D3)', 'Canvas (with easel)', 'Canvas (with D3)', 'SVG (same data, no clear)', 'WebGL','Canvas(with pixi)'];
         var totalTime = 0;
         var count = parseInt($('#sampling').val());
         var endTime;
         for (var f = 0; f < count; f++) {
             if (i == 0 || i == 3) {
-                if(i==0)
+                if (i == 0)
                     svgJq.empty();
                 var startTime = new Date().getTime();
                 drawD3();
@@ -251,11 +270,18 @@
                 drawCanvas();
                 endTime = new Date().getTime() - startTime;
             } else if (i == 4) {
-                elem.empty();
+                webgl.empty();
+                var renderer = new PIXI.WebGLRenderer(dim, dim, {backgroundColor: 0xFFFFFF});
 
-                var renderer = new PIXI.WebGLRenderer(dim, dim,{backgroundColor : 0xFFFFFF});
-
-                elem[0].appendChild(renderer.view);
+                webgl[0].appendChild(renderer.view);
+                var stage = new PIXI.Container();
+                var startTime = new Date().getTime();
+                drawWebgl(stage, renderer)
+                endTime = new Date().getTime() - startTime;
+            } else if(i==5){
+                webgl2.empty();
+                var renderer = new PIXI.CanvasRenderer(dim, dim, {backgroundColor: 0xFFFFFF});
+                webgl2[0].appendChild(renderer.view);
                 var stage = new PIXI.Container();
 
                 var startTime = new Date().getTime();
@@ -275,7 +301,7 @@
             totalTime += endTime;
         }
 
-        $('#result' + i).text('Average rendering ' + arr[i] + ' took ' + Math.round(totalTime/ count) + ' ms');
+        $('#result' + i).text('Average rendering ' + arr[i] + ' took ' + Math.round(totalTime / count) + ' ms');
     }
 
     createData(numNodes);
