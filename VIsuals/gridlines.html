@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="https://code.createjs.com/easeljs-0.8.1.min.js" type="text/javascript"></script>
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+<canvas id="demoCanvas" height="600" width="600"></canvas>
+<script>
+    var layout = function(boundingBox, valuesX, valuesY, strokeWidth, fontHeight, margin){
+        var width = boundingBox.width;
+        var height = boundingBox.height;
+        var top = boundingBox.top;
+        var left = boundingBox.left;
+
+        var halfStroke = strokeWidth/2;
+        var gridLineWidth = width - halfStroke - (margin.left + margin.right);
+        var gridLineHeight = height - halfStroke - (margin.top + margin.bottom);
+        var gridLineTop = top + strokeWidth/2 + margin.top;
+        var gridLineLeft = left + strokeWidth/2 + margin.left;
+
+        var linesYLayout = [];
+        var textYLayout = [];
+        var spaceY = gridLineWidth / (valuesY.length - 1);
+
+        for(var i=0; i< valuesY.length; i++) {
+            var adjustedTop = i * spaceY + gridLineTop;
+            linesYLayout.push({x1: gridLineLeft, y1: adjustedTop, x2: gridLineLeft + gridLineWidth, y2: adjustedTop});
+            textYLayout.push({x: left, y: adjustedTop + fontHeight/2, text: valuesY[i]});
+        }
+
+        var linesXLayout = [];
+        var textXLayout = [];
+        var spaceX = gridLineHeight / (valuesX.length - 1);
+
+        for(var i=0; i< valuesX.length; i++) {
+            var adjustedLeft = i * spaceX + gridLineLeft;
+            linesXLayout.push({x1: adjustedLeft, y1: gridLineTop, x2: adjustedLeft, y2: gridLineTop + gridLineHeight});
+            textXLayout.push({x: adjustedLeft - 12, y: height - fontHeight/2, text: valuesY[i]});
+        }
+
+        return {
+            strokeWidth: strokeWidth,
+            textYLayout: textYLayout,
+            textXLayout: textXLayout,
+            linesXLayout: linesXLayout,
+            linesYLayout: linesYLayout
+        }
+    };
+
+    var drawLines = function(lines, stage, color, strokeWidth) {
+        var line = new createjs.Shape();
+        line.graphics.setStrokeStyle(strokeWidth)
+                .beginStroke(color);
+
+        for(var i=0; i< lines.length; i++) {
+            var lineLayout = lines[i];
+            line.graphics
+                    .moveTo(lineLayout.x1, lineLayout.y1)
+                    .lineTo(lineLayout.x2, lineLayout.y2);
+        }
+
+        line.graphics.endStroke();
+
+        stage.addChild(line);
+    };
+
+    var drawText = function(layout, stage, fontSize){
+        var text = new createjs.Text(layout.text, fontSize + "px Arial", "#666666");
+        text.x = layout.x;
+        text.y = layout.y;
+        text.textBaseline = "alphabetic";
+
+        stage.addChild(text);
+    };
+
+    var draw = function(){
+        stage = new createjs.Stage("demoCanvas");
+        var fontSize = 12;
+
+        var f = 30;
+        var margin = {left: f, top: f, right: f, bottom: f};
+
+        var lay = layout({top: 0, left: 0, width: 600, height: 600},
+                ["10M","20M","30M"],["10M","20M","30M"],
+                2, fontSize, margin);
+
+        var lines = lay.linesXLayout.concat(lay.linesYLayout);
+
+        drawLines(lines, stage, '#666666', lay.strokeWidth);
+
+        var tickLabels = lay.textYLayout.concat(lay.textXLayout);
+
+        for(var i=0; i< tickLabels.length; i++) {
+            drawText(tickLabels[i], stage, fontSize);
+        }
+
+        stage.update();
+    }
+
+    draw();
+</script>
+</body>
+</html>
