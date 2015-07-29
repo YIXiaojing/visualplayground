@@ -11,6 +11,7 @@
 <canvas id="demoCanvas" height="600" width="600"></canvas>
 <script>
     var layout = function(boundingBox, valuesX, valuesY, strokeWidth, fontHeight, margin){
+        valuesY = valuesY.reverse();
         var width = boundingBox.width;
         var height = boundingBox.height;
         var top = boundingBox.top;
@@ -24,7 +25,7 @@
 
         var linesYLayout = [];
         var textYLayout = [];
-        var spaceY = gridLineWidth / (valuesY.length - 1);
+        var spaceY = gridLineHeight / (valuesY.length - 1);
 
         for(var i=0; i< valuesY.length; i++) {
             var adjustedTop = i * spaceY + gridLineTop;
@@ -34,12 +35,12 @@
 
         var linesXLayout = [];
         var textXLayout = [];
-        var spaceX = gridLineHeight / (valuesX.length - 1);
+        var spaceX = gridLineWidth / (valuesX.length - 1);
 
         for(var i=0; i< valuesX.length; i++) {
             var adjustedLeft = i * spaceX + gridLineLeft;
             linesXLayout.push({x1: adjustedLeft, y1: gridLineTop, x2: adjustedLeft, y2: gridLineTop + gridLineHeight});
-            textXLayout.push({x: adjustedLeft - 12, y: height - fontHeight/2, text: valuesY[i]});
+            textXLayout.push({x: adjustedLeft - 12, y: height - fontHeight/2, text: valuesX[i]});
         }
 
         return {
@@ -69,7 +70,7 @@
     };
 
     var drawText = function(layout, stage, fontSize){
-        var text = new createjs.Text(layout.text, fontSize + "px Arial", "#666666");
+        var text = new createjs.Text(layout.text, fontSize + "px san-serif", "#666666");
         text.x = layout.x;
         text.y = layout.y;
         text.textBaseline = "alphabetic";
@@ -81,16 +82,16 @@
         stage = new createjs.Stage("demoCanvas");
         var fontSize = 12;
 
-        var f = 30;
-        var margin = {left: f, top: f, right: f, bottom: f};
+        var f = 25;
+        var margin = {left: f+10, top: f, right: f, bottom: f};
 
-        var lay = layout({top: 0, left: 0, width: 600, height: 600},
-                ["10M","20M","30M"],["10M","20M","30M"],
-                2, fontSize, margin);
+        var lay = layout({top: 0, left: 0, width: 600, height: 300},
+                ["10M","20M","30M", "40M","50M","60M"],["15M","30M","45M","60M","75M","90M","105M"],
+                1, fontSize, margin);
 
         var lines = lay.linesXLayout.concat(lay.linesYLayout);
 
-        drawLines(lines, stage, '#666666', lay.strokeWidth);
+        drawLines(lines, stage, 'lightgrey', lay.strokeWidth);
 
         var tickLabels = lay.textYLayout.concat(lay.textXLayout);
 
