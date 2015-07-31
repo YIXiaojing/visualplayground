@@ -1,5 +1,9 @@
 #view{
     background: url("http://expo.getbootstrap.com/screenshots/microsoft-power-bi.jpg");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
+}
+
+body{
+    margin: 0;
 }

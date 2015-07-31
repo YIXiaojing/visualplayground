@@ -13054,7 +13054,7 @@ CanvasMaskManager.prototype.destroy = function () {};
 var utils = require('../../../utils');
 
 /**
- * Utility methods for Sprite/Texture tinting.
+ * FishUtility methods for Sprite/Texture tinting.
  * @static
  * @class
  * @memberof PIXI

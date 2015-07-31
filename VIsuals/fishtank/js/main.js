@@ -83,13 +83,15 @@ function requestFish() {
     aquarium.prepare();
 }
 
-function newFish() {
+function newFish(count) {
     // x, y, length, width
-    length = FishUtility.rand(60, 200);
-    fishes.push(new Fish(FishUtility.rand(50,view.canvas.width*.7),
-        FishUtility.rand(75,view.canvas.height-150),
-        length,
-        FishUtility.rand(length*.6, length*.9)));
+    for(var i=0; i< count; i++) {
+        var length = FishUtility.rand(60, 200);
+        fishes.push(new Fish(FishUtility.rand(50, view.canvas.width * .7),
+            FishUtility.rand(75, view.canvas.height - 150),
+            length,
+            FishUtility.rand(length * .6, length * .9)));
+    }
 }
 
-newFish();newFish();newFish();newFish();newFish();newFish();
+newFish(10);

@@ -1044,7 +1044,7 @@
     return hasOwnProperty.call(obj, key);
   };
 
-  // Utility Functions
+  // FishUtility Functions
   // -----------------
 
   // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
@@ -3009,7 +3009,7 @@ var Backbone = Backbone || {};
 
     },
 
-    // Utility Functions will go here.
+    // FishUtility Functions will go here.
 
     /**
      * Interpret an SVG Node and add it to this instance's scene. The
@@ -6286,7 +6286,7 @@ var Backbone = Backbone || {};
   Polygon.MakeObservable(Polygon.prototype);
 
   /**
-   * Utility functions
+   * FishUtility functions
    */
 
   function getCurveLength(a, b, limit) {
