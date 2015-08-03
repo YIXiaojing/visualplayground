@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+
+    <script src="https://code.createjs.com/easeljs-0.8.1.min.js" type="text/javascript"></script>
+    <script src="basicShapes.js"></script>
+</head>
+<body>
+<canvas id="demoCanvas" height="600" width="600"></canvas>
+<script>
+    var calculateLayout = function(boundingBox){
+        var top = boundingBox.top;
+        var left = boundingBox.left;
+        var height = boundingBox.height;
+        var width = boundingBox.width;
+
+        var rackPanelThickness = 10;
+        var rackSidePaneRadius = rackPanelThickness/2;
+
+        return {
+            rectangles:[{
+                x:left,
+                y:top,
+                height:height,
+                width: rackPanelThickness,
+                radiusTL: rackSidePaneRadius,
+                radiusTR: rackSidePaneRadius,
+                radiusBL: rackSidePaneRadius,
+                radiusBR: rackSidePaneRadius
+            },
+                {
+                    x: width-rackPanelThickness + left,
+                    y:top,
+                    height:height,
+                    width: rackPanelThickness,
+                    radiusTL: rackSidePaneRadius,
+                    radiusTR: rackSidePaneRadius,
+                    radiusBL: rackSidePaneRadius,
+                    radiusBR: rackSidePaneRadius
+                },
+                {
+                    x:left,
+                    y:rackPanelThickness + top,
+                    height:rackPanelThickness,
+                    width: width,
+                    radiusTL: rackSidePaneRadius,
+                    radiusTR: rackSidePaneRadius,
+                    radiusBL: rackSidePaneRadius,
+                    radiusBR: rackSidePaneRadius
+                },
+                {
+                    x:left,
+                    y:height - rackPanelThickness*2 + top,
+                    height:rackPanelThickness,
+                    width: width,
+                    radiusTL: rackSidePaneRadius,
+                    radiusTR: rackSidePaneRadius,
+                    radiusBL: rackSidePaneRadius,
+                    radiusBR: rackSidePaneRadius
+                }
+            ]
+        }
+    };
+
+    var layout= calculateLayout({top: 0, left: 0, width: 600, height: 300});
+    stage = new createjs.Stage("demoCanvas");
+    for(var i=0;i<layout.rectangles.length; i++){
+        drawComplexRect(stage, layout.rectangles[i],'brown');
+    }
+    stage.update();
+</script>
+</body>
+</html>
