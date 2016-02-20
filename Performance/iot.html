@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r74/three.js"></script>
+    <style>
+        canvas{
+            height: 300px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<input type="text">
+<button>Add</button>
+<div id="glimpse"></div>
+<script>
+    $('button').on('click', function(){
+        loadGlimpse($('input').val());
+    });
+    function loadGlimpse(id) {
+        $.get("http://pbi-glimpse.azurewebsites.net/?id="+id, function (data) {
+            var json = JSON.parse(data);
+
+            var socket = io('http://'+json.url);
+            socket.on('visual', function (data) {
+                console.log(data.impl);
+                $('<script>')
+                        .attr('type', 'text/javascript')
+                        .text(data.impl)
+                        .appendTo('head');
+
+                new MyGlimpse({host: socket, element: document.getElementById('glimpse')});
+
+                setTimeout(function () {
+                    socket.emit('earth');
+                }, 2000);
+            });
+            socket.emit('init');
+        });
+    }
+</script>
+</body>
+</html>
