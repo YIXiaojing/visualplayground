@@ -55,9 +55,6 @@
 
                 g = new Glimpse({host: socket, element: document.getElementById('glimpse')});
                 re();
-                setTimeout(function () {
-                    socket.emit('earth');
-                }, 2000);
             });
             socket.emit('init');
         });
