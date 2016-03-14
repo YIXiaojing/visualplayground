@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"
+            integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.min.js"></script>
+    <script src="../keys.js"></script>
+    <script src="dummyData.js"></script>
+    <script type="text/javascript">
+        (function ($m) {
+            (function (proto) {
+                if (!proto.moveLocation) {
+                    proto.moveLocation = function (loc, speed) {
+                        // loc = Location to move the pushpin to
+                        // speed = time (in milliseconds) to perform animation
+                        var that = this, startLoc = this.getLocation(),
+                                endLoc = loc, startTime = new Date();
+                        if (speed === undefined) {
+                            speed = 1000; // Default to 1 second
+                        }
+                        var interval = window.setInterval(function () {
+                            var timeElapsed = (new Date()) - startTime;
+                            if (timeElapsed >= speed) {
+                                // Full animation time (speed) has elapsed
+                                // Just set final location and end animation
+                                that.setLocation(endLoc);
+                                window.clearInterval(interval);
+                            }
+                            // Set the Latitude/Longitude values to a percentage
+                            // of the total distance to move based on the amount
+                            // of time that has elapsed since animation started.
+                            var timeElapsedPercent = (timeElapsed / speed);
+                            var latitudeDistToMove = (
+                                    endLoc.latitude - startLoc.latitude
+                            );
+                            var longitudeDistToMove = (
+                                    endLoc.longitude - startLoc.longitude
+                            );
+                            that.setLocation(new $m.Location(
+                                    startLoc.latitude + (timeElapsedPercent * latitudeDistToMove),
+                                    startLoc.longitude + (timeElapsedPercent * longitudeDistToMove)
+                            ));
+                        }, 1);
+                    };
+                }
+            })($m.Pushpin.prototype);
+        })(Microsoft.Maps);
+    </script>
+    <script type="text/javascript">
+
+        function calculate(ways, callback, optimize){
+            optimize = optimize || false;
+
+            if(optimize){
+                getDirections(ways, function(d){
+                    getDirections(optimizeRoute(d[0]['routeLegs'], ways), callback);
+                })
+            }else{
+                getDirections(ways, callback);
+            }
+        }
+
+        function getDirections(ways, callback) {
+            var m = new Microsoft.Maps.Map(document.createElement('div'),
+                    {
+                        credentials: BING_KEY,
+                        mapTypeId: Microsoft.Maps.MapTypeId.road,
+                        showDashboard: false
+                    })
+            var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(m);
+
+            for (var i = 0; i < ways.length; i++) {
+                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({address: ways[i]}));
+            }
+
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function () {
+                callback(directionsManager.getRouteResult());
+                m.dispose();
+                m = null;
+                directionsManager = null;
+            });
+            directionsManager.calculateDirections();
+        }
+
+        function optimizeRoute(legs, adds) {
+            var mapped = [];
+
+            for (var l = 0; l < legs.length; l++) {
+                var loc = legs[l].startWaypointLocation;
+
+                    mapped.push(new Microsoft.Maps.Location(loc.latitude, loc.longitude));
+            }
+
+            var center = Microsoft.Maps.LocationRect.fromLocations(mapped).center;
+            var optLegs = [];
+
+            for (var h = 0; h < legs.length; h++) {
+                var loc = legs[h].startWaypointLocation;
+                var b = bearing(center.latitude, center.longitude, loc.latitude, loc.longitude);
+
+                optLegs.push({
+                    first: h === 0,
+                    add: adds[h],
+                    bearing: b
+                })
+            }
+
+            optLegs = _.sortBy(optLegs, function (o) {
+                return o.bearing
+            });
+
+
+
+            while (!optLegs[0].first) {
+                optLegs.push(optLegs.shift());
+            }
+
+            optLegs.push({
+                first: false,
+                add: adds[adds.length - 1]
+            });
+
+            console.log(optLegs);
+
+            var r  = $.map(optLegs, function (d) {
+                return d.add
+            });
+            console.log('r -> '+ r.length)
+            return r;
+        }
+
+        function animatePin(legs, icon) {
+
+            console.log(legs.length)
+            var mapped = [];
+            for (var g = 0; g < legs.length; g++) {
+                console.log(legs[g]['subLegs'].length);
+                var path = legs[g]['subLegs'][0].routePath;
+                var lats = path.decodedLatitudes;
+                var lons = path.decodedLongitudes;
+
+                for (var i = 0; i < lats.length; i++) {
+                    mapped.push(new Microsoft.Maps.Location(lats[i], lons[i]));
+                }
+            }
+
+            bestFit = _.merge(_.clone(bestFit), _.clone(mapped));
+            var bestView = Microsoft.Maps.LocationRect.fromLocations(bestFit);
+            //bestView.height = bestView.height * 2;
+            //bestView.width = bestView.width * 2;
+
+            map.setView({bounds: bestView});
+
+            var i = 0;
+            var pin = new Microsoft.Maps.Pushpin(
+                    mapped[0],
+                    {
+                        //icon: ,
+                        icon: icon,
+                        width: 48,
+                        height: 48,
+                        draggable: false,
+                        //typeName: 'truckMarker',
+
+                    });
+
+            map.entities.push(pin);
+            var flag = true;
+            setInterval(function () {
+                i += flag ? 1 : -1;
+
+
+                if(i<mapped.length) {
+                    pin.moveLocation(mapped[i], 10);
+                }
+            }, 20);
+        }
+
+        function directionsModuleLoaded() {
+            var op2 = ['98391', '98444', '98023', '98010', '98499', '98391'];
+            var op3 = _.shuffle(zips).splice(0, 4);
+            op3.push(_.clone(op3[0]));
+            calculate(_.clone(op2), function (d) {
+                setTimeout(function() {
+                    animatePin(d[0]['routeLegs'], 'https://cdn2.iconfinder.com/data/icons/shop-payment-vol-5/128/shop-13-48.png');
+                },1000);
+            });
+
+            setTimeout(function() {
+                calculate(_.clone(op2), function (d) {
+                    animatePin(d[0]['routeLegs'], 'https://cdn4.iconfinder.com/data/icons/e-commerce-and-shopping-3/500/transport-delivery-48.png');
+                }, true)
+            },1000);
+        }
+
+            function bearing(lat1, lng1, lat2, lng2) {
+                function _toDeg(rad) {
+                    return rad * 180 / Math.PI;
+                }
+
+                function _toRad(deg) {
+                    return deg * Math.PI / 180;
+                }
+
+                var dLon = (lng2 - lng1);
+                var y = Math.sin(dLon) * Math.cos(lat2);
+                var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+                var brng = _toDeg(Math.atan2(y, x));
+                return 360 - ((brng + 360) % 360);
+            }
+
+            function GetMap() {
+                bestFit = [];
+                map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
+                        {
+                            credentials: BING_KEY,
+                            mapTypeId: Microsoft.Maps.MapTypeId.road,
+                            showDashboard: false
+                        });
+
+                Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: directionsModuleLoaded})
+
+            }
+    </script>
+</head>
+<body onload="GetMap();">
+<div id='mapDiv' style="position:relative; width:800px; height:600px;"></div>
+</body>
+</html>
