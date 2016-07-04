@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <title></title>
@@ -54,47 +53,70 @@
     </script>
     <script type="text/javascript">
 
-        function calculate(ways, callback, optimize){
-            optimize = optimize || false;
+        var reqQueue = [];
+        var running = false;
+        var results =[];
+        var mainMap;
+        var hiddenQueryMap;
+        var directionsManager;
+        var pins = {};
 
-            if(optimize){
-                getDirections(ways, function(d){
-                    getDirections(optimizeRoute(d[0]['routeLegs'], ways), callback);
-                })
-            }else{
-                getDirections(ways, callback);
-            }
-        }
+        function initScene() {
+            bestFit = [];
+            mainMap = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
+                    {
+                        credentials: BING_KEY,
+                        mapTypeId: Microsoft.Maps.MapTypeId.road,
+                        showDashboard: false
+                    });
 
-        function getDirections(ways, callback) {
-            var m = new Microsoft.Maps.Map(document.createElement('div'),
+            hiddenQueryMap = new Microsoft.Maps.Map({appendChild:function(){}},
                     {
                         credentials: BING_KEY,
                         mapTypeId: Microsoft.Maps.MapTypeId.road,
                         showDashboard: false
                     })
-            var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(m);
 
-            for (var i = 0; i < ways.length; i++) {
-                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({address: ways[i]}));
-            }
+            Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: onReady})
 
+        }
+        function onReady() {
+            directionsManager = new Microsoft.Maps.Directions.DirectionsManager(hiddenQueryMap);
             Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function () {
-                callback(directionsManager.getRouteResult());
-                m.dispose();
-                m = null;
-                directionsManager = null;
+                var r = directionsManager.getRouteResult();
+                reqQueue[0].callback(r);
+                reqQueue.shift();
+                directionsManager.resetDirections();
+                if(reqQueue.length > 0){
+                    execReq(reqQueue[0]);
+                }else {
+                    running = false;
+                }
             });
-            directionsManager.calculateDirections();
+
+            run();
         }
 
+        function execReq(req){
+            for (var i = 0; i < req.ways.length; i++) {
+                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({address: req.ways[i]}));
+            }
+            directionsManager.calculateDirections();
+        }
+        function enqueueDirectionRequest(ways, callback) {
+            console.log('enqueueDirectionRequest');
+            reqQueue.push({ways:ways,callback:callback});
+            if(!running){
+                running = true;
+                execReq(reqQueue[0]);
+            }
+        }
         function optimizeRoute(legs, adds) {
             var mapped = [];
 
             for (var l = 0; l < legs.length; l++) {
                 var loc = legs[l].startWaypointLocation;
-
-                    mapped.push(new Microsoft.Maps.Location(loc.latitude, loc.longitude));
+                mapped.push(new Microsoft.Maps.Location(loc.latitude, loc.longitude));
             }
 
             var center = Microsoft.Maps.LocationRect.fromLocations(mapped).center;
@@ -115,8 +137,6 @@
                 return o.bearing
             });
 
-
-
             while (!optLegs[0].first) {
                 optLegs.push(optLegs.shift());
             }
@@ -126,40 +146,15 @@
                 add: adds[adds.length - 1]
             });
 
-            console.log(optLegs);
-
-            var r  = $.map(optLegs, function (d) {
+            var r = $.map(optLegs, function (d) {
                 return d.add
             });
-            console.log('r -> '+ r.length)
+            console.log('r -> ' + r.length)
             return r;
         }
-
-        function animatePin(legs, icon) {
-
-            console.log(legs.length)
-            var mapped = [];
-            for (var g = 0; g < legs.length; g++) {
-                console.log(legs[g]['subLegs'].length);
-                var path = legs[g]['subLegs'][0].routePath;
-                var lats = path.decodedLatitudes;
-                var lons = path.decodedLongitudes;
-
-                for (var i = 0; i < lats.length; i++) {
-                    mapped.push(new Microsoft.Maps.Location(lats[i], lons[i]));
-                }
-            }
-
-            bestFit = _.merge(_.clone(bestFit), _.clone(mapped));
-            var bestView = Microsoft.Maps.LocationRect.fromLocations(bestFit);
-            //bestView.height = bestView.height * 2;
-            //bestView.width = bestView.width * 2;
-
-            map.setView({bounds: bestView});
-
-            var i = 0;
+        function createPin(icon, startLoc){
             var pin = new Microsoft.Maps.Pushpin(
-                    mapped[0],
+                    startLoc,
                     {
                         //icon: ,
                         icon: icon,
@@ -170,66 +165,140 @@
 
                     });
 
-            map.entities.push(pin);
+            mainMap.entities.push(pin);
+
+            return pin;
+        }
+        function movePin(id, loc, icon){
+            if(pins[id] === undefined){
+                console.log('creating pin '+id)
+                console.log(loc)
+                pins[id] = createPin(icon, loc)
+            }
+
+            var pin = pins[id];
+            pin.moveLocation(loc, 5);
+        }
+        function generatePinRoutePath(legs){
+            console.log('legs -> ' + legs.length)
+            var locationsPoints = [];
+            for (var g = 0; g < legs.length; g++) {
+                console.log('sub legs -> ' + legs[g]['subLegs'].length);
+                var path = legs[g]['subLegs'][0].routePath;
+                var lats = path.decodedLatitudes;
+                var lons = path.decodedLongitudes;
+
+                for (var i = 0; i < lats.length; i++) {
+                    locationsPoints.push({
+                        coord: new Microsoft.Maps.Location(lats[i], lons[i]),
+                        last: i === lats.length - 1
+                    });
+                }
+            }
+
+            return locationsPoints
+        }
+        function updateViewportToFit(locations){
+            bestFit = _.merge(_.clone(bestFit), _.clone($.map(locations, function(d){return d.coord})));
+            var bestView = Microsoft.Maps.LocationRect.fromLocations(bestFit);
+
+
+            //bestView.height = bestView.height * 2;
+            //bestView.width = bestView.width * 2;
+
+            mainMap.setView({bounds: bestView});
+        }
+
+        function animatePin(legs, icon, name) {
+             var mapped = generatePinRoutePath(legs);
+            updateViewportToFit(mapped);
+
+            var i = 0;
             var flag = true;
-            setInterval(function () {
+            var distance = 0;
+            var t = setInterval(function () {
                 i += flag ? 1 : -1;
 
-
-                if(i<mapped.length) {
-                    pin.moveLocation(mapped[i], 10);
+                if (i < mapped.length) {
+                    movePin(name, mapped[i].coord, icon);
+                    if (i > 0) {
+                        distance += getDistanceFromLatLonInKm(
+                                mapped[i - 1].coord.latitude,
+                                mapped[i - 1].coord.longitude,
+                                mapped[i].coord.latitude,
+                                mapped[i].coord.longitude)
+                    }
+                } else {
+                    clearInterval(t);
+                    console.log('distance for '+name+' -> ' + Math.round(distance / 1.6) + ' miles')
+                    results[name] = Math.round(distance / 1.6);
                 }
-            }, 20);
+            }, 10);
+        }
+        function bearing(lat1, lng1, lat2, lng2) {
+            function _toDeg(rad) {
+                return rad * 180 / Math.PI;
+            }
+
+            function _toRad(deg) {
+                return deg * Math.PI / 180;
+            }
+
+            var dLon = (lng2 - lng1);
+            var y = Math.sin(dLon) * Math.cos(lat2);
+            var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+            var brng = _toDeg(Math.atan2(y, x));
+            return 360 - ((brng + 360) % 360);
+        }
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            function deg2rad(deg) {
+                return deg * (Math.PI / 180)
+            }
+
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+            var dLon = deg2rad(lon2 - lon1);
+            var a =
+                            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+                    ;
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c; // Distance in km
+            return d;
         }
 
-        function directionsModuleLoaded() {
+        function requestDirections(ways, callback, optimize) {
+            optimize = optimize || false;
+
+            if (optimize) {
+                enqueueDirectionRequest(ways, function (d) {
+                    enqueueDirectionRequest(optimizeRoute(d[0]['routeLegs'], ways), callback);
+                })
+            } else {
+                enqueueDirectionRequest(ways, callback);
+            }
+        }
+        function run() {
             var op2 = ['98391', '98444', '98023', '98010', '98499', '98391'];
-            var op3 = _.shuffle(zips).splice(0, 4);
-            op3.push(_.clone(op3[0]));
-            calculate(_.clone(op2), function (d) {
-                setTimeout(function() {
-                    animatePin(d[0]['routeLegs'], 'https://cdn2.iconfinder.com/data/icons/shop-payment-vol-5/128/shop-13-48.png');
-                },1000);
-            });
 
-            setTimeout(function() {
-                calculate(_.clone(op2), function (d) {
-                    animatePin(d[0]['routeLegs'], 'https://cdn4.iconfinder.com/data/icons/e-commerce-and-shopping-3/500/transport-delivery-48.png');
-                }, true)
-            },1000);
+            for(var i=0;i<1;i++) {
+                var op3 = _.shuffle(zips).splice(0, 6);
+                op3.push(_.clone(op3[0]));
+                (function(vari, op3) {
+                    requestDirections(_.clone(op3), function (d) {
+                        animatePin(d[0]['routeLegs'], 'https://cdn2.iconfinder.com/data/icons/shop-payment-vol-5/128/shop-13-48.png', 'balloon ' + vari);
+                    });
+
+                    requestDirections(_.clone(op3), function (d) {
+                        animatePin(d[0]['routeLegs'], 'https://cdn4.iconfinder.com/data/icons/e-commerce-and-shopping-3/500/transport-delivery-48.png', 'truck ' + vari);
+                    }, true);
+                })(i, op3);
+            }
         }
-
-            function bearing(lat1, lng1, lat2, lng2) {
-                function _toDeg(rad) {
-                    return rad * 180 / Math.PI;
-                }
-
-                function _toRad(deg) {
-                    return deg * Math.PI / 180;
-                }
-
-                var dLon = (lng2 - lng1);
-                var y = Math.sin(dLon) * Math.cos(lat2);
-                var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-                var brng = _toDeg(Math.atan2(y, x));
-                return 360 - ((brng + 360) % 360);
-            }
-
-            function GetMap() {
-                bestFit = [];
-                map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),
-                        {
-                            credentials: BING_KEY,
-                            mapTypeId: Microsoft.Maps.MapTypeId.road,
-                            showDashboard: false
-                        });
-
-                Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: directionsModuleLoaded})
-
-            }
     </script>
 </head>
-<body onload="GetMap();">
+<body onload="initScene();">
 <div id='mapDiv' style="position:relative; width:800px; height:600px;"></div>
 </body>
 </html>

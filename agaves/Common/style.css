@@ -1,0 +1,23 @@
+body {
+    overflow: hidden;
+    margin: 0px;
+}
+
+.get-data {
+    cursor: pointer;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    opacity: 0.1
+}
+
+.get-data:hover {
+    opacity: 1
+}
+
+#console {
+    float: left;
+    position: 'absolute'
+}
