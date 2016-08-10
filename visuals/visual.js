@@ -20,7 +20,7 @@ var mockHost = {
         return {
             select: function(){
                 return {
-                    then: (fx) => fx([])
+                    then: function(fx) {return  fx([])}
                 }
             },
             hasSelection: function(){ return false},
