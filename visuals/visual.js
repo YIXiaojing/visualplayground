@@ -1,35 +1,35 @@
 var mockHost = {
-    createSelectionIdBuilder: () => {
+    createSelectionIdBuilder: function () {
         return {
             withCategory: function () { return this },
             withSeries: function () { return this },
             withMeasure: function () { return this },
-            createSelectionId: () => {
+            createSelectionId: function () {
                 return {
-                    equals: () => false,
-                    includes: () => false,
-                    getKey: () => "fakekey",
+                    equals: function () { return false},
+                    includes: function () {return false},
+                    getKey: function () { return "fakekey"},
                     getSelector: "",
-                    getSelectorsByColumn: () => [],
-                    hasIdentity: () => false
+                    getSelectorsByColumn: function () { return []},
+                    hasIdentity: function () { return false}
                 }
             }
         }
     },
-    createSelectionManager: () => {
+    createSelectionManager: function () {
         return {
-            select: () => {
+            select: function(){
                 return {
                     then: (fx) => fx([])
                 }
             },
-            hasSelection: () => false,
-            clear: () => {
+            hasSelection: function(){ return false},
+            clear: function() {
                 return {
-                    then: (fx) => fx([])
+                    then: function(fx) {return fx([])}
                 }
             },
-            getSelectionIds: () => []
+            getSelectionIds: function() {return []}
         }
     },
     colors: [{ value: 'green' }, { value: 'blue' }]
