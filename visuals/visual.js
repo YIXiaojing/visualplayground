@@ -58,13 +58,14 @@ function addStyleString(str) {
 
 function load() {
     getJSON('viz.json', function (e, d) {
-        var content = d.content;
+        var json = d.content? d : JSON.parse(d);
+        var content = json.content;
         var js = content.js;
 
         addStyleString(content.css);
         eval(content.js);
 
-        var guid = d.visual.guid;
+        var guid = json.visual.guid;
         var plugin = powerbi.visuals.plugins[guid];
         var element = document.getElementById('host');
         element.className = 'visual-' + guid;
