@@ -57,6 +57,7 @@ function addStyleString(str) {
 }
 
 function load() {
+    console.log('loading ...');
     getJSON('visual.json', function (e, d) {
         var content = d.content;
         var js = content.js;
