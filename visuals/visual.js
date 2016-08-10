@@ -57,8 +57,7 @@ function addStyleString(str) {
 }
 
 function load() {
-    console.log('loading ...');
-    getJSON('visual.json', function (e, d) {
+    getJSON('viz.json', function (e, d) {
         var content = d.content;
         var js = content.js;
 
@@ -66,7 +65,6 @@ function load() {
         eval(content.js);
 
         var guid = d.visual.guid;
-        console.log(guid);
         var plugin = powerbi.visuals.plugins[guid];
         var element = document.getElementById('host');
         element.className = 'visual-' + guid;
@@ -75,17 +73,7 @@ function load() {
             host: mockHost
         });
 
-        var vm = {
-            dataPoints: [{ category: 'one', color: '#FE4365', value: 10 },
-                { category: 'two', color: '#FC9D9A', value: 7 },
-                { category: 'three', color: '#F9CDAD', value: 5 },
-                { category: 'four', color: '#C8C8A9', value: 3 },
-                { category: 'five', color: '#83AF9B', value: 2 }],
-            dataMax: 10,
-            settings: { enableAxis: { show: true } }
-        };
-
-        viz.update({ viewport: { height: window.innerHeight, width: window.innerWidth } }, vm)
+        viz.update({ viewport: { height: window.innerHeight, width: window.innerWidth } });
     });
 }
 
